@@ -1,23 +1,38 @@
 # cloudhop
 ⛈ Simple serverless functions dedicated for load balancing.
 
+## Information spoofing
+### User agent
+* Platform information is spread out. All user agents requesting for mobile pages are spoofed as a Google Pixel 5 device, and all others are spoofed as a Windows 11 device.
+* All Chrome-based browsers are presented as on a random predefined version, all Firefox-based browsers are presented as Firefox LTS, and all others are disguised as Dalvik 2.1.0 on Google Pixel 5.
+
 ## Deploy
 ### Cloudflare Workers
 Before successful deployments, make sure to add the following environment variables (**not adding them in KV store!**).
 
 * `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
 * `BACKHOST`: _(not working correctly)_ The real `Host` header to send to the servers.
-* `MASK_UPSTREAM`: _(not implemented)_ How to treat upstream information.
+* `MASK_UPSTREAM`: _(no customization yet)_ How to treat upstream information.
   * `strip`: Do not send any upstream information
-  * `asIs`: Try not to tamper.
+  * `give`: Send the real IP address of upstream.
   * `spoof`: (default) Send randomly-generated upstream information.
-* `FORCE_TLS`: _(not implemented)_ How to treat TLS on outgoing connections.
-  * `tls`: Enforce HTTPS
-  * `plain`: Enforce plain-text HTTP
+  * `mask:<v4>:<v6>`: Send the masked IP address of upstream, with the masked parts generated randomly. `spoof` acts the same as `mask:32:128`.
+  * Any other value would be sent as the fake IP address.
+* `MASK_UA`: _(not implemented)_ How to deal with user agent strings of upstreams.
+  * `asIs`: Do not modify.
+  * `noBracket`: Remove any information inside the brackets, and replace them with fake ones correspondingly.
+  * `mimic`: Provide fake user agents correspondingly.
+  * Any other value would be sent as user agent strings.
+* `FORCE_IN_TLS`: _(not implemented)_ How to treat TLS on incoming connections.
+  * `tls`: Block plain-text HTTP requests.
+  * `plain`: Block HTTPS requests.
+  * `asIs`: (default) Don't discriminate.
+* `FORCE_OUT_TLS`: _(not implemented)_ How to treat TLS on outgoing connections.
+  * `tls`: Enforce HTTPS.
+  * `plain`: Enforce plain-text HTTP.
   * `asIs`: (default) Follow upstream.
-* `BALANCING`: _(not implemented)_ How to choose origins.
+* `BALANCING`: _(no customization yet)_ How to choose origins.
   * `random`: (default) Randomly choose an origin.
-  * `time:`: Choose origins based on time. Define cycles in seconds after the colon. For example, `time:5` sweeps through all origins every 5 seconds.
 * `HEALTH_MAX_TRIES`: _(not implemented)_ Max tries on passive health checks before erroring out. Defaulted to `3`.
 * `HEALTH_CRITERIA`: _(not implemented)_ How to behave on passive health checks.
   * `asIs`: (default) Don't perform.

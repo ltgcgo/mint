@@ -8,7 +8,7 @@
 
 ## Deploy
 ### Cloudflare Workers
-Before successful deployments, make sure to add the following environment variables (**not adding them in KV store!**).
+All keys and values below are case sensitive. Before successful deployments, make sure to add the following environment variables (**not adding them in KV store!**).
 
 * `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
 * `BACKHOST`: _(not working correctly)_ The real `Host` header to send to the servers.
@@ -18,21 +18,19 @@ Before successful deployments, make sure to add the following environment variab
   * `spoof`: (default) Send randomly-generated upstream information.
   * `mask:<v4>:<v6>`: Send the masked IP address of upstream, with the masked parts generated randomly. `spoof` acts the same as `mask:32:128`.
   * Any other value would be sent as the fake IP address.
-* `MASK_UA`: _(not implemented)_ How to deal with user agent strings of upstreams.
+* `MASK_UA`: How to deal with user agent strings of upstreams.
   * `asIs`: Do not modify.
-  * `noBracket`: Remove any information inside the brackets, and replace them with fake ones correspondingly.
+  * `noBracket`: (default) Remove any information inside the brackets, and replace them with fake ones correspondingly.
   * `mimic`: Provide fake user agents correspondingly.
   * Any other value would be sent as user agent strings.
 * `FORCE_IN_TLS`: _(not implemented)_ How to treat TLS on incoming connections.
   * `tls`: Block plain-text HTTP requests.
   * `plain`: Block HTTPS requests.
   * `asIs`: (default) Don't discriminate.
-* `FORCE_OUT_TLS`: _(not implemented)_ How to treat TLS on outgoing connections.
+* `FORCE_OUT_TLS`: _(no customization yet)_ How to treat TLS on outgoing connections.
   * `tls`: Enforce HTTPS.
   * `plain`: Enforce plain-text HTTP.
   * `asIs`: (default) Follow upstream.
-* `BALANCING`: _(no customization yet)_ How to choose origins.
-  * `random`: (default) Randomly choose an origin.
 * `HEALTH_MAX_TRIES`: _(not implemented)_ Max tries on passive health checks before erroring out. Defaulted to `3`.
 * `HEALTH_CRITERIA`: _(not implemented)_ How to behave on passive health checks.
   * `asIs`: (default) Don't perform.

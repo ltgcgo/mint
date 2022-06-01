@@ -12,22 +12,22 @@ All keys and values below are case sensitive. Before successful deployments, mak
 
 * `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
 * `BACKHOST`: _(not working correctly)_ The real `Host` header to send to the servers.
-* `MASK_UPSTREAM`: _(no customization yet)_ How to treat upstream information.
+* `MASK_IP`: How to treat upstream information.
   * `strip`: Do not send any upstream information
   * `give`: Send the real IP address of upstream.
   * `spoof`: (default) Send randomly-generated upstream information.
-  * `mask:<v4>:<v6>`: Send the masked IP address of upstream, with the masked parts generated randomly. `spoof` acts the same as `mask:32:128`.
+  * `mask:<v4>:<v6>`: _(not implemented yet)_ Send the masked IP address of upstream, with the masked parts generated randomly. `spoof` acts the same as `mask:32:128`.
   * Any other value would be sent as the fake IP address.
 * `MASK_UA`: How to deal with user agent strings of upstreams.
   * `asIs`: Do not modify.
   * `noBracket`: (default) Remove any information inside the brackets, and replace them with fake ones correspondingly.
   * `mimic`: Provide fake user agents correspondingly.
   * Any other value would be sent as user agent strings.
-* `FORCE_IN_TLS`: _(not implemented)_ How to treat TLS on incoming connections.
+* `FORCE_IN_TLS`: How to treat TLS on incoming connections.
   * `tls`: Block plain-text HTTP requests.
   * `plain`: Block HTTPS requests.
   * `asIs`: (default) Don't discriminate.
-* `FORCE_OUT_TLS`: _(no customization yet)_ How to treat TLS on outgoing connections.
+* `FORCE_OUT_TLS`: How to treat TLS on outgoing connections.
   * `tls`: Enforce HTTPS.
   * `plain`: Enforce plain-text HTTP.
   * `asIs`: (default) Follow upstream.

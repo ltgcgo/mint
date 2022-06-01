@@ -1,5 +1,7 @@
 "use strict";
 
+const allowedProtocols = ["http:", "https:", "ws:", "wss:"];
+
 let rand = function (max, min = 0) {
 	let range = max - min;
 	return Math.floor(Math.random() * range) + min;
@@ -90,6 +92,45 @@ let reqHandler = async function (request) {
 	let reqUrl = new URL(request.url);
 	let reqHost = origins.random();
 	reqUrl.hostname = reqHost;
+	let detProtIdx = allowedProtocols.indexOf(reqUrl.protocol);
+	if (detProtIdx > -1) {
+		switch (self.FORCE_IN_TLS) {
+			case "plain": {
+				if (detProtIdx % 2 == 1) {
+					return new Response(`Using HTTPS on HTTP server.`, {
+						status: 400,
+						headers: {
+							"Alt-Server": "Cloud Hop",
+							"Content-Type": "text/plain"
+						}
+					});
+				};
+				break;
+			};
+			case "tls": {
+				if (detProtIdx % 2 == 0) {
+					return new Response(`Using HTTP on HTTPS server.`, {
+						status: 400,
+						headers: {
+							"Alt-Server": "Cloud Hop",
+							"Content-Type": "text/plain"
+						}
+					});
+				};
+				break;
+			};
+		};
+		switch (self.FORCE_OUT_TLS) {
+			case "tls": {
+				reqUrl.protocol = allowedProtocols[(detProtIdx >> 1 << 1) + 1] || reqUrl.protocol;
+				break;
+			};
+			case "plain": {
+				reqUrl.protocol = allowedProtocols[detProtIdx >> 1 << 1] || reqUrl.protocol;
+				break;
+			};
+		};
+	};
 	let newReq = new Request(reqUrl.toString(), request);
 	let fakeRequester = genIPv4();
 	newReq.headers.delete("Origin");

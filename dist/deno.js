@@ -1,0 +1,2 @@
+"use strict";(()=>{var n=(e=>typeof require!="undefined"?require:typeof Proxy!="undefined"?new Proxy(e,{get:(s,t)=>(typeof require!="undefined"?require:s)[t]}):e)(function(e){if(typeof require!="undefined")return require.apply(this,arguments);throw new Error('Dynamic require of "'+e+'" is not supported')});var r=n("https://deno.land/std/http/server.ts");(0,r.serve)(function(e){return new Response("Example placeholder.")});})();
+//# sourceMappingURL=deno.js.map

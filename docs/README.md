@@ -26,9 +26,8 @@ All keys and values below are case sensitive. Before successful deployments, mak
 * `ADAPT_BODY`: Whether to replace all origin domains into the worker domain.
   * `1`: Enabled.
   * Any other value would be considered a false value.
-* `FULL_INFO`: Whether to spoof as much information as possible.
-  * `1`: Send extra information without any spoofing.
-  * Any other value would be considered a false value, only providing bare minimum to origins.
+* `MATCH_LANG`: Match the languages against the user agent provided list, and only give the server matched ones. Seperate with commas. `*` for the first user-provided language.
+  * Example: `en` for any English variants, `en_CA` for Canadian English, and `en_GB,en,fr` to match the three languages.
 * `HEALTH_ACTIVE`: _(not implemented)_ Enable active health checks on persistent serverless deployments.
 * `HEALTH_MAX_TRIES`: _(not implemented)_ Max tries on passive health checks before erroring out. Defaulted to `3`.
 * `HEALTH_CRITERIA`: _(not implemented)_ How to behave on passive health checks.

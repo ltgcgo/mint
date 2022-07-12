@@ -3,7 +3,6 @@ mkdir -p dist
 mkdir -p proxy
 # Remove the dev files
 rm -rv dist/*
-rm -rv proxy/*
 # Using esbuild to build all JS files
 #esbuild --bundle src/index.js --outfile=dist/index.js --minify --sourcemap
 #esbuild --bundle src/index.js --target=es6 --outfile=dist/index.es6.js --minify --sourcemap
@@ -15,8 +14,8 @@ done
 rm -rv proxy/*.map
 # Finalizing build
 cp proxy/cloudflare.js dist
-cat src/denoPrefix.js > dist/deno.js
+cat src/misc/denoPrefix.js > dist/deno.js
 cat proxy/deno.js >> dist/deno.js
-cat src/denoPrefix.js > dist/fly.js
+cat src/misc/denoPrefix.js > dist/fly.js
 cat proxy/fly.js >> dist/fly.js
 exit

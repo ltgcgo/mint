@@ -39,10 +39,18 @@ let filterHeaders = async function (response, filter, altThis) {
 		headerObj[newVal[0]] = newVal[1];
 	});
 	let target = response.body;
-	if (self.ADAPT_BODY == "1" && response.headers.get("Content-Type")?.toLowerCase().test("text/html", "text/html; charset=utf-8", "text/css")) {
+	let contentType = response.headers.get("Content-Type")?.toLowerCase(), realType = false;
+	if (contentType?.indexOf("html") > -1) {
+		realType = true;
+	} else if (contentType?.indexOf("css") > -1) {
+		realType = true;
+	};
+	if (self.ADAPT_BODY == "1" && realType) {
 		target = await response.text();
 		target = target.replaceAll(altThis.from, altThis.to);
 		headerObj["CloudHop-AdaptBody"] = "1";
+	} else {
+		headerObj["CloudHop-AdaptBody"] = "0";
 	};
 	return new Response(target, {
 		status: response.status,
@@ -177,8 +185,6 @@ let reqHandler = async function (request) {
 	if ((self.FULL_INFO || "0") != "1" && request.headers.has("Accept-Language")) {
 		newReq.headers.set("Accept-Language", request.headers.get("Accept-Language").split(",")[0]);
 	};
-	newReq.headers.set("Host", getBackHost(reqHost));
-	newReq.headers.set("X-Host", getBackHost(reqHost));
 	newReq.headers.set("X-Real-IP", fakeRequester);
 	newReq.headers.set("X-Forwarded-For", `${fakeRequester}:${rand(65536,1024)}`);
 	newReq.headers.set("X-Forwarded-Proto", proto);
@@ -186,13 +192,12 @@ let reqHandler = async function (request) {
 	newReq.headers.set("Cf-Ew-Via", "0");
 	newReq.headers.set("Cf-Ray", "${genSegv6()}${genSegv6()}${genSegv6()}${genSegv6()}-FRA");
 	newReq.headers.set("Cf-Visitor", `{"scheme":"${proto}"}`);
-	//newReq.headers.set("Cf-Worker", "workers.dev");
-	//newReq.headers.set("Cdn-Loop", "cloudflare; subreqs=2");
 	newReq.headers.set("Mod-Rewrite", "Off");
 	newReq.headers.set("X-Hcl-Forwarded-Port", (proto == "https") ? "443" : "80");
 	newReq.headers.set("X-Hcl-Forwarded-Proto", proto);
 	newReq.headers.set("X-Scheme", "https");
 	newReq.headers.set("User-Agent", getUserAgent(request.headers.get("User-Agent") || "Dalvik/2.1.0 (Linux; Android 12; Pixel 5)", self.MASK_UA));
+	// Should implement passive health checks and server-side rewrite
 	let response = await fetch(reqUrl, newReq);
 	if (response.status >= 300 && response.status < 400) {
 		let repHeaders = "";

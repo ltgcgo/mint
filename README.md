@@ -11,7 +11,6 @@
 All keys and values below are case sensitive. Before successful deployments, make sure to add the following environment variables (**not adding them in KV store!**).
 
 * `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
-* `BACKHOST`: _(not working correctly)_ The real `Host` header to send to the servers.
 * `MASK_IP`: How to treat upstream information.
   * `strip`: Do not send any upstream information
   * `give`: Send the real IP address of upstream.

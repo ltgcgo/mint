@@ -1,2 +1,2 @@
-"use strict";import {serve} from "https://deno.land/std/http/server.ts";"use strict";(()=>{})();
+"use strict";import {serve} from "https://deno.land/std/http/server.ts";(()=>{})();
 //# sourceMappingURL=fly.js.map

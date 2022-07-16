@@ -1,5 +1,7 @@
 "use strict";
 
+import {getPlatformEnvGetter} from "./env.js";
+
 Array.prototype.random = function () {
 	return this[Math.floor(Math.random() * this.length)];
 };
@@ -7,6 +9,14 @@ Array.prototype.random = function () {
 // Pre-defined
 let defaultHeaders = {
 	"Server": "Cloud Hop"
+};
+
+// Detect current environment
+let envGet;
+if (self.Deno) {
+	envGet = getPlatformEnvGetter("deno");
+} else {
+	envGet = getPlatformEnvGetter("global");
 };
 
 // Fetch environment variables

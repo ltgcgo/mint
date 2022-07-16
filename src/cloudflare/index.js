@@ -1,5 +1,4 @@
 "use strict";
-import {envGet} from "./env.js";
 import {handleRequest} from "../core/index.js";
 //import {stripHeader} from "./strip.js";
 

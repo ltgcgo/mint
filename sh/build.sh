@@ -13,9 +13,12 @@ ls -1 src | while IFS= read -r dir ; do
 done
 rm -rv proxy/*.map
 # Finalizing build
-cp proxy/cloudflare.js dist
-cat src/misc/denoPrefix.js > dist/deno.js
-cat proxy/deno.js >> dist/deno.js
-cat src/misc/denoPrefix.js > dist/fly.js
-cat proxy/fly.js >> dist/fly.js
+ls -1 src | while IFS= read -r dir ; do
+	if [ -e "src/${dir}/prefixer.js" ] ; then
+		cat src/${dir}/prefixer.js > dist/${dir}.js
+	fi
+	if [ -e "proxy/${dir}.js" ] ; then
+		cat proxy/${dir}.js >> dist/${dir}.js
+	fi
+done
 exit

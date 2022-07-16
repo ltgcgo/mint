@@ -1,0 +1,1 @@
+"use strict";let envGet=function(a,b=""){return self[a]||b};

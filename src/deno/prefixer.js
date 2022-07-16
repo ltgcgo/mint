@@ -1,0 +1,1 @@
+"use strict";import {serve} from "https://deno.land/std/http/server.ts";let envGet=function(a,b=""){return Deno.env.get(a)||b};

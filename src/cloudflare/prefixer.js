@@ -1,1 +1,1 @@
-"use strict";let envGet=function(a,b=""){return self[a]||b};
+"use strict";let eG=function(a,b=""){return self[a]||b};

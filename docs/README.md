@@ -2,6 +2,8 @@
 ### Environment variables
 All keys and values below are case sensitive. Before successful deployments, make sure to add the following environment variables (**not adding them in KV stores!**).
 
+* `DEBUGGER`: Add some headers useful in debugging situations.
+  * `1`: Enable.
 * `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
 * `BACKHOST`: Define the actual host used.
 * `MASK_IP`: How to treat upstream information.
@@ -15,7 +17,7 @@ All keys and values below are case sensitive. Before successful deployments, mak
   * `noBracket`: (default) Remove any information inside the brackets, and replace them with fake ones correspondingly.
   * `mimic`: Provide fake user agents correspondingly.
   * Any other value would be sent as user agent strings.
-* `FORCE_IN_TLS`: How to treat TLS on incoming connections.
+* `FORCE_IN_TLS`: How to treat TLS on incoming connections. Cannot be used on Deno Deploy.
   * `tls`: Block plain-text HTTP requests.
   * `plain`: Block HTTPS requests.
   * `asIs`: (default) Don't discriminate.
@@ -23,6 +25,10 @@ All keys and values below are case sensitive. Before successful deployments, mak
   * `tls`: Enforce HTTPS.
   * `plain`: Enforce plain-text HTTP.
   * `asIs`: (default) Follow upstream.
+* `STRIP_HEADERS_UP`: Headers to strip when going upstream. Case insensitive, and seperated with `,`.
+* `STRIP_HEADERS`: Headers to strip in responses. Case insensitive, and seperated with `,`.
+* `SET_HEADERS_UP`: Headers to add/set when going upstream. Keys are case insensitive, define values with `=`, and seperated with `,`.
+* `SET_HEADERS`: Headers to add/set in responses. Keys are case insensitive, define values with `=`, and seperated with `,`.
 * `ADAPT_BODY`: Whether to replace all origin domains into the worker domain.
   * `1`: Enabled.
   * Any other value would be considered a false value.
@@ -33,5 +39,5 @@ All keys and values below are case sensitive. Before successful deployments, mak
 * `HEALTH_CRITERIA`: _(not implemented)_ How to behave on passive health checks.
   * `asIs`: (default) Don't perform.
   * `loose`: Only switch to another origin if the worker cannot connect to the chosen one.
-  * `500`: Switch to another origin when the above happens, or when the server replies with a status code of `5xx`.
-  * `400`: Switch to another origin when the above happens, or when the server replies with a status code of `4xx`.
+  * `server`: Switch to another origin when the above happens, or when the server replies with a status code of `5xx`.
+  * `client`: Switch to another origin when the above happens, or when the server replies with a status code of `4xx`.

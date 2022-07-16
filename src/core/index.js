@@ -1,7 +1,7 @@
 "use strict";
 
 let handleRequest = async function (request, clientInfo) {
-	let response = new Response(clientInfo.hostname);
+	let response = new Response(clientInfo);
 	return response;
 };
 

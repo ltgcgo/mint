@@ -11,6 +11,6 @@ import {handleRequest} from "../core/index.js";
 //import {stripHeader} from "./strip.js";
 
 serve(async function (request, connInfo) {
-	let clientInfo = connInfo.remoteAddr;
-	return await handleRequest(request, clientInfo);
+	let clientIp = connInfo.remoteAddr.hostname;
+	return await handleRequest(request, clientIp);
 });

@@ -5,8 +5,6 @@ import {handleRequest} from "../core/index.js";
 
 addEventListener("fetch", async function (event) {
 	let request = event.request;
-	let clientInfo = {
-		hostname: request.headers.get("cf-connecting-ip")
-	};
+	let clientInfo = request.headers.get("cf-connecting-ip");
 	return await handleRequest(request, clientInfo);
 });

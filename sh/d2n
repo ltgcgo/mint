@@ -1,0 +1,4 @@
+#!/bin/bash
+args=( "$@" )
+deno run --no-prompt --allow-net --allow-read --allow-write https://deno.land/x/deno2node/src/cli.ts ${args[@]}
+exit

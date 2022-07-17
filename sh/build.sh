@@ -12,7 +12,7 @@ ls -1 src | while IFS= read -r dir ; do
 	fi
 done
 rm -rv proxy/*.map
-# Finalizing build
+# Finalizing most builds
 ls -1 src | while IFS= read -r dir ; do
 	if [ -e "src/${dir}/prefixer.js" ] ; then
 		cat src/${dir}/prefixer.js > dist/${dir}.js
@@ -21,4 +21,8 @@ ls -1 src | while IFS= read -r dir ; do
 		cat proxy/${dir}.js >> dist/${dir}.js
 	fi
 done
+# Node specific
+mkdir -p proxy/node
+mv dist/node.js proxy/node/index.js
+rm proxy/node.js
 exit

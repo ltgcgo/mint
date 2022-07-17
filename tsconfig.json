@@ -1,0 +1,20 @@
+{
+	"include": ["proxy/node/"],
+	"deno2node": {
+		"vendorDir": "proxy/vendor/",
+		"shim": "src/node/shim.js"
+	},
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"declaration": true,
+		"declarationMap": true,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"noEmitOnError": true,
+		"outDir": "proxy/nodeOut/",
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ES2020"
+	}
+}

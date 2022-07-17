@@ -1,3 +1,6 @@
-dist/*.map
-proxy/*
+/dist/*.map
+/proxy/*
 *.swp
+/lib/*
+/node_modules/*
+/src/vendor/*

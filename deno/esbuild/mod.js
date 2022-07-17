@@ -287,6 +287,7 @@ function pushCommonFlags(flags, options, keys) {
   let jsxFragment = getFlag(options, keys, "jsxFragment", mustBeString);
   let define = getFlag(options, keys, "define", mustBeObject);
   let logOverride = getFlag(options, keys, "logOverride", mustBeObject);
+  let supported = getFlag(options, keys, "supported", mustBeObject);
   let pure = getFlag(options, keys, "pure", mustBeArray);
   let keepNames = getFlag(options, keys, "keepNames", mustBeBoolean);
   if (legalComments)
@@ -346,6 +347,13 @@ function pushCommonFlags(flags, options, keys) {
       if (key.indexOf("=") >= 0)
         throw new Error(`Invalid log override: ${key}`);
       flags.push(`--log-override:${key}=${logOverride[key]}`);
+    }
+  }
+  if (supported) {
+    for (let key in supported) {
+      if (key.indexOf("=") >= 0)
+        throw new Error(`Invalid supported: ${key}`);
+      flags.push(`--supported:${key}=${supported[key]}`);
     }
   }
   if (pure)
@@ -721,8 +729,8 @@ function createChannel(streamIn) {
     if (isFirstPacket) {
       isFirstPacket = false;
       let binaryVersion = String.fromCharCode(...bytes);
-      if (binaryVersion !== "0.14.42") {
-        throw new Error(`Cannot start service: Host version "${"0.14.42"}" does not match binary version ${JSON.stringify(binaryVersion)}`);
+      if (binaryVersion !== "0.14.49") {
+        throw new Error(`Cannot start service: Host version "${"0.14.49"}" does not match binary version ${JSON.stringify(binaryVersion)}`);
       }
       return;
     }
@@ -1173,7 +1181,7 @@ function createChannel(streamIn) {
           callerRefs.unref();
       }
     };
-    let writeDefault = !streamIn.isBrowser;
+    let writeDefault = !streamIn.isWriteUnavailable;
     let {
       entries,
       flags,
@@ -1233,7 +1241,7 @@ function createChannel(streamIn) {
                 throw new Error("Cannot rebuild");
               sendRequest(refs, { command: "rebuild", key }, (error2, response2) => {
                 if (error2) {
-                  const message = { pluginName: "", text: error2, location: null, notes: [], detail: void 0 };
+                  const message = { id: "", pluginName: "", text: error2, location: null, notes: [], detail: void 0 };
                   return callback2(failureErrorWithLog("Build failed", [message], []), null);
                 }
                 buildResponseToResult(response2, (error3, result3) => {
@@ -1301,8 +1309,8 @@ function createChannel(streamIn) {
         callback2(null, result);
       });
     };
-    if (write && streamIn.isBrowser)
-      throw new Error(`Cannot enable "write" in the browser`);
+    if (write && streamIn.isWriteUnavailable)
+      throw new Error(`The "write" option is unavailable in this environment`);
     if (incremental && streamIn.isSync)
       throw new Error(`Cannot use "incremental" with a synchronous build`);
     if (watch && streamIn.isSync)
@@ -1516,7 +1524,7 @@ function extractErrorMessageV8(e, streamIn, stash, note, pluginName) {
     location = parseStackLinesV8(streamIn, (e.stack + "").split("\n"), "");
   } catch {
   }
-  return { pluginName, text, location, notes: note ? [note] : [], detail: stash ? stash.store(e) : -1 };
+  return { id: "", pluginName, text, location, notes: note ? [note] : [], detail: stash ? stash.store(e) : -1 };
 }
 function parseStackLinesV8(streamIn, lines, ident) {
   let at = "    at ";
@@ -1615,6 +1623,7 @@ function sanitizeMessages(messages, property, stash, fallbackPluginName) {
   let index = 0;
   for (const message of messages) {
     let keys = {};
+    let id = getFlag(message, keys, "id", mustBeString);
     let pluginName = getFlag(message, keys, "pluginName", mustBeString);
     let text = getFlag(message, keys, "text", mustBeString);
     let location = getFlag(message, keys, "location", mustBeObjectOrNull);
@@ -1636,6 +1645,7 @@ function sanitizeMessages(messages, property, stash, fallbackPluginName) {
       }
     }
     messagesClone.push({
+      id: id || "",
       pluginName: pluginName || fallbackPluginName,
       text: text || "",
       location: sanitizeLocation(location, where),
@@ -1670,7 +1680,7 @@ function convertOutputFiles({ path, contents }) {
 
 // lib/deno/mod.ts
 import * as denoflate from "https://deno.land/x/denoflate@1.2.1/mod.ts";
-var version = "0.14.42";
+var version = "0.14.49";
 var build = (options) => ensureServiceIsRunning().then((service) => service.build(options));
 var serve = (serveOptions, buildOptions) => ensureServiceIsRunning().then((service) => service.serve(serveOptions, buildOptions));
 var transform = (input, options) => ensureServiceIsRunning().then((service) => service.transform(input, options));
@@ -1697,6 +1707,8 @@ var initialize = async (options) => {
   options = validateInitializeOptions(options || {});
   if (options.wasmURL)
     throw new Error(`The "wasmURL" option only works in the browser`);
+  if (options.wasmModule)
+    throw new Error(`The "wasmModule" option only works in the browser`);
   if (options.worker)
     throw new Error(`The "worker" option only works in the browser`);
   if (initializeWasCalled)
@@ -1789,7 +1801,8 @@ async function install() {
     "aarch64-apple-darwin": "esbuild-darwin-arm64",
     "aarch64-unknown-linux-gnu": "esbuild-linux-arm64",
     "x86_64-apple-darwin": "esbuild-darwin-64",
-    "x86_64-unknown-linux-gnu": "esbuild-linux-64"
+    "x86_64-unknown-linux-gnu": "esbuild-linux-64",
+    "x86_64-unknown-freebsd": "esbuild-freebsd-64"
   };
   if (platformKey in knownWindowsPackages) {
     return await installFromNPM(knownWindowsPackages[platformKey], "esbuild.exe");
@@ -1843,7 +1856,7 @@ var ensureServiceIsRunning = () => {
           startWriteFromQueueWorker();
         },
         isSync: false,
-        isBrowser: false,
+        isWriteUnavailable: false,
         esbuild: mod_exports
       });
       const stdoutBuffer = new Uint8Array(4 * 1024 * 1024);

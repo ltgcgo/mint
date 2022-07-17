@@ -1,0 +1,1 @@
+"use strict";import{serve}from"../../deno/std_http/server.js";let eG=(a,b="")=>{return Deno.env.get(a)||b};let pV="Node",pE=Deno.exit.bind();let self=globalThis;

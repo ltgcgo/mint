@@ -21,7 +21,7 @@ let defaultHeaders = {
 let debugHeaders = eG("DEBUGGER", "0") == "1";
 let origin = eG("BACKENDS", "internal").split(",");
 let realHost = eG("BACKHOST", "");
-let maskIP = eG("MASK_IP", "give");
+let maskIP = eG("MASK_IP", "strip");
 let maskUA = eG("MASK_UA", "noBracket");
 let tlsIn = eG("FORCE_IN_TLS", "asIs");
 let tlsOut = eG("FORCE_OUT_TLS", "asIs");
@@ -30,7 +30,17 @@ let matchLang = eG("MATCH_LANG", "*").split(",");
 let maxTries = Math.max(parseInt(eG("HEALTH_MAX_TRIES", "3")), 1);
 let activeCheck = self.isPersPlat && Math.max(parseFloat(eG("HEALTH_ACTIVE", "5")), 15) * 1000;
 let failCrit = eG("HEALTH_CRITERIA", "asIs");
-let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "4000")), 4000);
+let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 4000);
+let headerStripUp = eG("STRIP_HEADERS_UP", "sec-fetch-user").split(",");
+let headerStripDown = eG("STRIP_HEADERS_DOWN", "alt-svc").split(",");
+let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "60"));
+
+// Parse shutdown
+if (idleShutdown > 0) {
+	idleShutdown = Math.max(idleShutdown, 60);
+} else {
+	idleShutdown = -1;
+};
 
 // Server console messages
 console.info(`Debug mode: ${debugHeaders ? "on" : "off"}`);
@@ -75,7 +85,6 @@ let handleRequest = async function (request, clientInfo) {
 	// Passive health check
 	let response, backTrace = [], keepGoing = true, localMaxTries = maxTries;
 	while (localMaxTries >= 0 && keepGoing) {
-		console.info(`Remaining tries: ${maxTries}`);
 		// Give an error if tried too many times
 		if (maxTries <= 0) {
 			return wrapHtml(502, `Bad gateway`, `All origins are down${debugHeaders ? ": " + backTrace : ""}.`);
@@ -87,8 +96,19 @@ let handleRequest = async function (request, clientInfo) {
 		backTrace.push(reqHost);
 		reqUrl.hostname = reqHost;
 		reqUrl.port = "";
+		// Partially clone the request object
+		let repRequest = {};
+		repRequest.method = request.method;
+		if (request.bodyUsed) {
+			repRequest.body = request.body;
+		};
+		// Request header manipulation
+		repRequest.headers = request.headers;
+		// Add an abort controller
+		let abortCtrl = AbortSignal.timeout(timeoutMs);
+		repRequest.signal = abortCtrl;
 		// Initiate a new request
-		let newReq = new Request(reqUrl.toString(), request);
+		let newReq = new Request(reqUrl.toString(), repRequest);
 		// Send the request
 		try {
 			response = await fetch(reqUrl, newReq);
@@ -115,14 +135,21 @@ let handleRequest = async function (request, clientInfo) {
 				default: {
 					keepGoing = failureCrits.indexOf(failCrit) <= 2;
 					if (!keepGoing) {
-						response = wrapHtml(502, "Bad gateway", `Origin down.${debugHeaders ? " Trace: " + backTrace : ""}`);
+						response = wrapHtml(502, "Bad gateway", `All origins are down.${debugHeaders ? " Trace: " + backTrace : ""}`);
 					};
 				};
 			};
 		} catch (err) {
 			keepGoing = failureCrits.indexOf(failCrit) <= 2;
 			if (!keepGoing) {
-				response = wrapHtml(502, "Bad gateway", `Origin down.${debugHeaders ? " Trace: " + backTrace : ""}<br/><pre>${err.stack}</pre>`);
+				switch (err.constructor) {
+					case TypeError: {
+						response = wrapHtml(502, "Bad gateway", `All origins are down.${debugHeaders ? " Trace: " + backTrace : ""}<br/><pre>${err.stack}</pre>`);
+					};
+					case TimeoutError: {
+						response = wrapHtml(504, "Timeout", `Gateway timeout after ${timeoutMs} ms.${debugHeaders ? " Trace: " + backTrace : ""}`);
+					};
+				};
 			};
 		};
 		localMaxTries --;

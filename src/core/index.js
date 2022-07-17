@@ -3,6 +3,7 @@
 import {wrapHtml} from "./genHtml.js";
 
 // Constants
+self.pW = "0.2";
 const allowedProtos = ["http:", "https:", "ws:", "wss:"],
 failureCrits = ["client", "server", "loose", "asIs"];
 
@@ -72,8 +73,9 @@ let handleRequest = async function (request, clientInfo) {
 	// Generate fake origin if it's set
 	// Match languages
 	// Passive health check
-	let response, backTrace = [], keepGoing = true;
-	while (maxTries >= 0 && keepGoing) {
+	let response, backTrace = [], keepGoing = true, localMaxTries = maxTries;
+	while (localMaxTries >= 0 && keepGoing) {
+		console.info(`Remaining tries: ${maxTries}`);
 		// Give an error if tried too many times
 		if (maxTries <= 0) {
 			return wrapHtml(502, `Bad gateway`, `All origins are down${debugHeaders ? ": " + backTrace : ""}.`);
@@ -88,32 +90,42 @@ let handleRequest = async function (request, clientInfo) {
 		// Initiate a new request
 		let newReq = new Request(reqUrl.toString(), request);
 		// Send the request
-		response = await fetch(reqUrl, newReq);
-		// Test if the response matches criteria
-		switch(Math.floor(response.status / 100)) {
-			case 2: {
-				keepGoing = false;
-				break;
+		try {
+			response = await fetch(reqUrl, newReq);
+			// Test if the response matches criteria
+			switch(Math.floor(response.status / 100)) {
+				case 2: {
+					keepGoing = false;
+					break;
+				};
+				case 3: {
+					let redirLoc = response.headers.get("location");
+					response = wrapHtml(response.status, "Redirection", `Origin issued an redirect to: <a href="${redirLoc}">${redirLoc}</a>.`);
+					keepGoing = false;
+					break;
+				};
+				case 4: {
+					keepGoing = failureCrits.indexOf(failCrit) == 0;
+					break;
+				};
+				case 5: {
+					keepGoing = failureCrits.indexOf(failCrit) <= 1;
+					break;
+				};
+				default: {
+					keepGoing = failureCrits.indexOf(failCrit) <= 2;
+					if (!keepGoing) {
+						response = wrapHtml(502, "Bad gateway", `Origin down.${debugHeaders ? " Trace: " + backTrace : ""}`);
+					};
+				};
 			};
-			case 3: {
-				let redirLoc = response.headers.get("location");
-				response = wrapHtml(response.status, "Redirection", `Origin issued an redirect to: <a href="${redirLoc}">${redirLoc}</a>.`);
-				keepGoing = false;
-				break;
-			};
-			case 4: {
-				keepGoing = failureCrits.indexOf(failCrit) <= 0;
-				break;
-			};
-			case 5: {
-				keepGoing = failureCrits.indexOf(failCrit) <= 1;
-				break;
-			};
-			default: {
-				keepGoing = failureCrits.indexOf(failCrit) <= 2;
+		} catch (err) {
+			keepGoing = failureCrits.indexOf(failCrit) <= 2;
+			if (!keepGoing) {
+				response = wrapHtml(502, "Bad gateway", `Origin down.${debugHeaders ? " Trace: " + backTrace : ""}<br/><pre>${err.stack}</pre>`);
 			};
 		};
-		maxTries --;
+		localMaxTries --;
 	};
 	return response || wrapHtml(500, "Empty response", `${keepGoing ? "Successful" : "Failed"} empty response from trace: ${backTrace}.<br/>Last requested URL: ${reqUrl.toString()}`);
 };

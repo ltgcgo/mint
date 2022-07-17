@@ -137,7 +137,7 @@ class Server {
         while(!this.#closed){
             let conn;
             try {
-                conn = await listener.accept();
+                conn = await (await listener).accept();
             } catch (error1) {
                 if (error1 instanceof Deno.errors.BadResource || error1 instanceof Deno.errors.InvalidData || error1 instanceof Deno.errors.UnexpectedEof || error1 instanceof Deno.errors.ConnectionReset || error1 instanceof Deno.errors.NotConnected) {
                     if (!acceptBackoffDelay) {
@@ -213,7 +213,7 @@ async function serve(handler, options = {}) {
         once: true
     });
     const s = server.listenAndServe();
-    port = server.addrs[0].port;
+    port = server.addrs[0]?.port || 8000;
     if ("onListen" in options) {
         options.onListen?.({
             port,
@@ -243,7 +243,7 @@ async function serveTls(handler, options) {
         once: true
     });
     const s = server.listenAndServeTls(options.certFile, options.keyFile);
-    port = server.addrs[0].port;
+    port = server.addrs[0]?.port || 8443;
     if ("onListen" in options) {
         options.onListen?.({
             port,

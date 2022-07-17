@@ -1,4 +1,5 @@
 {
+	"name": "cloudhop",
 	"type": "module",
 	"version": "0.2",
 	"exports": "./proxy/node.js",

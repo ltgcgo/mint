@@ -1,7 +1,7 @@
 "use strict";
 
 import {wrapHtml} from "./genHtml.js";
-import {headerSet, adaptResp} from "./header.js";
+import {headerSet, headerMap, adaptResp, adaptReqHeaders} from "./header.js";
 
 // Constants
 self.pW = "0.2";
@@ -10,12 +10,6 @@ failureCrits = ["client", "server", "loose", "asIs"];
 
 Array.prototype.random = function () {
 	return this[Math.floor(Math.random() * this.length)];
-};
-
-// Pre-defined
-let defaultHeaders = {
-	"Server": "Cloud Hop",
-	"Content-Type": "text/html"
 };
 
 // Fetch environment variables
@@ -32,10 +26,10 @@ let maxTries = Math.max(parseInt(eG("HEALTH_MAX_TRIES", "3")), 1);
 let activeCheck = self.isPersPlat && Math.max(parseFloat(eG("HEALTH_ACTIVE", "5")), 15) * 1000;
 let failCrit = eG("HEALTH_CRITERIA", "asIs");
 let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 2500);
-let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "sec-fetch-user").split(","));
+let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "").split(","), ["host"]);
 let headerStripDown = headerSet(eG("STRIP_HEADERS", "").split(","), ["alt-svc"]);
-let headerSetUp;
-let headerSetDown;
+let headerSetUp = headerMap(eG("SET_HEADERS_UP", ""));
+let headerSetDown = headerMap(eG("SET_HEADERS", ""));
 let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "60"));
 
 // Parse shutdown
@@ -52,7 +46,7 @@ console.info(`Backends: ${origin}`);
 let handleRequest = async function (request, clientInfo) {
 	// Generate a pre-determinted response if nothing is configured.
 	if (origin.length == 1 && origin[0] == "internal") {
-		return wrapHtml(503, `Hey, it works!`,`<span id="c">Cloud Hop</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
+		return wrapHtml(503, `Hey, it works!`, `<span id="c">Cloud Hop</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
 	};
 	let reqUrl = new URL(request.url);
 	// Give an error page when protocol mismatch
@@ -88,7 +82,7 @@ let handleRequest = async function (request, clientInfo) {
 	// Prepare for header manipulation
 	let localHeaders = headerSetDown || {};
 	// Passive health check
-	let response, backTrace = [], keepGoing = true, localTries = maxTries;
+	let response, backTrace = [], keepGoing = true, localTries = maxTries, sentHeaders;
 	while (localTries >= 0 && keepGoing) {
 		// Give an error if tried too many times
 		if (maxTries <= 0) {
@@ -112,7 +106,10 @@ let handleRequest = async function (request, clientInfo) {
 			repRequest.body = request.body;
 		};
 		// Request header manipulation
-		repRequest.headers = request.headers;
+		repRequest.headers = adaptReqHeaders(request.headers, {strip: headerStripUp, set: headerSetUp});
+		if (debugHeaders) {
+			sentHeaders = repRequest.headers;
+		};
 		// Add an abort controller
 		let abortCtrl = AbortSignal.timeout(timeoutMs);
 		repRequest.signal = abortCtrl;
@@ -172,6 +169,7 @@ let handleRequest = async function (request, clientInfo) {
 			localHeaders["X-CloudHop-Target"] = reqHost;
 			localHeaders["X-CloudHop-Health"] = `${localTries}/${maxTries}`;
 			localHeaders["X-CloudHop-Trace"] = backTrace.toString();
+			localHeaders["X-CloudHop-Up"] = JSON.stringify(sentHeaders);
 		};
 		localTries --;
 	};

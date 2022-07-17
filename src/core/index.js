@@ -30,14 +30,14 @@ let matchLang = eG("MATCH_LANG", "*").split(",");
 let maxTries = Math.max(parseInt(eG("HEALTH_MAX_TRIES", "3")), 1);
 let activeCheck = self.isPersPlat && Math.max(parseFloat(eG("HEALTH_ACTIVE", "5")), 15) * 1000;
 let failCrit = eG("HEALTH_CRITERIA", "asIs");
-let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 4000);
+let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 2500);
 let headerStripUp = eG("STRIP_HEADERS_UP", "sec-fetch-user").split(",");
 let headerStripDown = eG("STRIP_HEADERS_DOWN", "alt-svc").split(",");
 let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "60"));
 
 // Parse shutdown
 if (idleShutdown > 0) {
-	idleShutdown = Math.max(idleShutdown, 60);
+	idleShutdown = Math.max(idleShutdown, 60) * 1000;
 } else {
 	idleShutdown = -1;
 };
@@ -83,8 +83,8 @@ let handleRequest = async function (request, clientInfo) {
 	// Generate fake origin if it's set
 	// Match languages
 	// Passive health check
-	let response, backTrace = [], keepGoing = true, localMaxTries = maxTries;
-	while (localMaxTries >= 0 && keepGoing) {
+	let response, backTrace = [], keepGoing = true, localTries = maxTries;
+	while (localTries >= 0 && keepGoing) {
 		// Give an error if tried too many times
 		if (maxTries <= 0) {
 			return wrapHtml(502, `Bad gateway`, `All origins are down${debugHeaders ? ": " + backTrace : ""}.`);
@@ -96,6 +96,10 @@ let handleRequest = async function (request, clientInfo) {
 		backTrace.push(reqHost);
 		reqUrl.hostname = reqHost;
 		reqUrl.port = "";
+		// Report the selected origin
+		if (debugHeaders) {
+			console.info(`Tries: ${localTries}, target: ${request.method} ${reqUrl.protocol}//${reqHost}/`);
+		};
 		// Partially clone the request object
 		let repRequest = {};
 		repRequest.method = request.method;
@@ -158,7 +162,7 @@ let handleRequest = async function (request, clientInfo) {
 				};
 			};
 		};
-		localMaxTries --;
+		localTries --;
 	};
 	return response || wrapHtml(500, "Empty response", `${keepGoing ? "Successful" : "Failed"} empty response from trace: ${backTrace}.<br/>Last requested URL: ${reqUrl.toString()}`);
 };

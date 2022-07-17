@@ -41,4 +41,5 @@ All keys and values below are case sensitive. Before successful deployments, mak
   * `loose`: Only switch to another origin if the worker cannot connect to the chosen one.
   * `server`: Switch to another origin when the above happens, or when the server replies with a status code of `5xx`.
   * `client`: Switch to another origin when the above happens, or when the server replies with a status code of `4xx`.
-* `TIMEOUT_MS`: Maximum waiting time until cancellation.
+* `TIMEOUT_MS`: Maximum waiting time in milliseconds until cancellation. Must be a number over `2500`.
+* `IDLE_SHUTDOWN`: Maximum idle time in seconds until exit. Must be either a negative number for disabling, or a number over `60`.

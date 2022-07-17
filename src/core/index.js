@@ -142,12 +142,18 @@ let handleRequest = async function (request, clientInfo) {
 		} catch (err) {
 			keepGoing = failureCrits.indexOf(failCrit) <= 2;
 			if (!keepGoing) {
-				switch (err.constructor) {
-					case TypeError: {
-						response = wrapHtml(502, "Bad gateway", `All origins are down.${debugHeaders ? " Trace: " + backTrace : ""}<br/><pre>${err.stack}</pre>`);
+				console.error(err.stack);
+				switch (err.constructor.name) {
+					case "TypeError": {
+						response = wrapHtml(502, "Bad gateway", `The last origin is down.${debugHeaders ? " Trace: " + backTrace : ""}<br/><pre>${err.stack}</pre>`);
+						break;
 					};
-					case TimeoutError: {
+					case "DOMException": {
 						response = wrapHtml(504, "Timeout", `Gateway timeout after ${timeoutMs} ms.${debugHeaders ? " Trace: " + backTrace : ""}`);
+						break;
+					};
+					default: {
+						response = wrapHtml(500, "Unknown error", `<pre>${err.stack}</pre>`);
 					};
 				};
 			};

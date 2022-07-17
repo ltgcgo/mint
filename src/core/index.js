@@ -42,8 +42,25 @@ if (idleShutdown > 0) {
 // Server console messages
 console.info(`Debug mode: ${debugHeaders ? "on" : "off"}`);
 console.info(`Backends: ${origin}`);
+console.info(`Host: ${realHost}`);
+console.info(`Masking: UA(${maskUA}), IP(${maskIP}), lang(${matchLang})`);
+console.info(`TLS: in(${tlsIn}), out(${tlsOut});`);
+console.info(`Health: active(${activeCheck}), tries(${maxTries}), crit(${failCrit}), timeout(${timeoutMs}ms)`);
+console.info(`Inactivity shutdown: ${idleShutdown}`);
+
+let lastActive = Date.now();
+if (idleShutdown > 0) {
+	setInterval(function () {
+		let currentTime = Date.now();
+		if (currentTime - lastActive > idleShutdown) {
+			console.info("Requested idle shutdown.");
+			pE();
+		};
+	}, 1000);
+};
 
 let handleRequest = async function (request, clientInfo) {
+	lastActive = Date.now();
 	// Generate a pre-determinted response if nothing is configured.
 	if (origin.length == 1 && origin[0] == "internal") {
 		return wrapHtml(503, `Hey, it works!`, `<span id="c">Cloud Hop</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
@@ -164,6 +181,7 @@ let handleRequest = async function (request, clientInfo) {
 				};
 			};
 		};
+		lastActive = Date.now();
 		// Add informative headers
 		if (debugHeaders) {
 			localHeaders["X-CloudHop-Target"] = reqHost;

@@ -30,7 +30,7 @@ let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "").split(","), ["host"]);
 let headerStripDown = headerSet(eG("STRIP_HEADERS", "").split(","), ["alt-svc"]);
 let headerSetUp = headerMap(eG("SET_HEADERS_UP", ""));
 let headerSetDown = headerMap(eG("SET_HEADERS", ""));
-let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "60"));
+let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "0"));
 
 // Parse shutdown
 if (idleShutdown > 0) {

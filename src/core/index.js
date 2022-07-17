@@ -101,10 +101,6 @@ let handleRequest = async function (request, clientInfo) {
 	// Passive health check
 	let response, backTrace = [], keepGoing = true, localTries = maxTries, sentHeaders;
 	while (localTries >= 0 && keepGoing) {
-		// Give an error if tried too many times
-		if (maxTries <= 0) {
-			return wrapHtml(502, `Bad gateway`, `All origins are down${debugHeaders ? ": " + backTrace : ""}.`);
-		};
 		// Randomly choose an origin
 		let reqHost = origin.random();
 		let v6EndIdx = reqHost.lastIndexOf("]"),
@@ -136,6 +132,7 @@ let handleRequest = async function (request, clientInfo) {
 		try {
 			response = await fetch(reqUrl, newReq);
 			// Test if the response matches criteria
+			//backTrace[backTrace.length - 1] = `${reqHost}(${response.status?.toString() || "000"})`;
 			switch(Math.floor(response.status / 100)) {
 				case 2: {
 					keepGoing = false;
@@ -169,14 +166,17 @@ let handleRequest = async function (request, clientInfo) {
 				switch (err.constructor.name) {
 					case "TypeError": {
 						response = wrapHtml(502, "Bad gateway", `The last origin is down.${debugHeaders ? " Trace: " + backTrace : ""}<br/><pre>${err.stack}</pre>`);
+						//backTrace[backTrace.length - 1] = `${reqHost}(DWN)`;
 						break;
 					};
 					case "DOMException": {
 						response = wrapHtml(504, "Timeout", `Gateway timeout after ${timeoutMs} ms.${debugHeaders ? " Trace: " + backTrace : ""}`);
+						//backTrace[backTrace.length - 1] = `${reqHost}(TMO)`;
 						break;
 					};
 					default: {
 						response = wrapHtml(500, "Unknown error", `<pre>${err.stack}</pre>`);
+						//backTrace[backTrace.length - 1] = `${reqHost}(UNK)`;
 					};
 				};
 			};
@@ -188,6 +188,12 @@ let handleRequest = async function (request, clientInfo) {
 			localHeaders["X-CloudHop-Health"] = `${localTries}/${maxTries}`;
 			localHeaders["X-CloudHop-Trace"] = backTrace.toString();
 			localHeaders["X-CloudHop-Up"] = JSON.stringify(sentHeaders);
+		};
+		// Give an error if tried too many times
+		if (localTries <= 1 && !response) {
+			response = wrapHtml(502, `Bad gateway`, `Passive health check count exceeded${debugHeaders ? ": " + backTrace : ""}.`);
+			localHeaders["X-CloudHop-Health"] = `0/${maxTries}`;
+			return await adaptResp(response, false, {set: localHeaders});
 		};
 		localTries --;
 	};

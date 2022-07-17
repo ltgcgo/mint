@@ -16,9 +16,9 @@ See [/docs](docs/README.md).
 
 ## Deployment support
 ### Platforms
-| Platform | Persistent | File |
-| -------- | ---------- | ---- |
-| AWS Lambda | No | `serverlessNode.js` |
-| Cloudflare Workers | No | `cloudflare.js` |
-| Deno Deploy | No | `deno.js` |
-| Fly.io | Yes | `fly.js` |
+| Platform | File |
+| -------- | ---- |
+| AWS Lambda | `node.js` |
+| Cloudflare Workers | `cloudflare.js` |
+| Deno Deploy | `deno.js` |
+| Fly.io | `deno.js` |

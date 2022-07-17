@@ -1,6 +1,7 @@
 "use strict";
 
 import {wrapHtml} from "./genHtml.js";
+import {headerSet, adaptResp} from "./header.js";
 
 // Constants
 self.pW = "0.2";
@@ -31,8 +32,10 @@ let maxTries = Math.max(parseInt(eG("HEALTH_MAX_TRIES", "3")), 1);
 let activeCheck = self.isPersPlat && Math.max(parseFloat(eG("HEALTH_ACTIVE", "5")), 15) * 1000;
 let failCrit = eG("HEALTH_CRITERIA", "asIs");
 let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 2500);
-let headerStripUp = eG("STRIP_HEADERS_UP", "sec-fetch-user").split(",");
-let headerStripDown = eG("STRIP_HEADERS_DOWN", "alt-svc").split(",");
+let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "sec-fetch-user").split(","));
+let headerStripDown = headerSet(eG("STRIP_HEADERS", "").split(","), ["alt-svc"]);
+let headerSetUp;
+let headerSetDown;
 let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "60"));
 
 // Parse shutdown
@@ -82,6 +85,8 @@ let handleRequest = async function (request, clientInfo) {
 	};
 	// Generate fake origin if it's set
 	// Match languages
+	// Prepare for header manipulation
+	let localHeaders = headerSetDown || {};
 	// Passive health check
 	let response, backTrace = [], keepGoing = true, localTries = maxTries;
 	while (localTries >= 0 && keepGoing) {
@@ -162,9 +167,15 @@ let handleRequest = async function (request, clientInfo) {
 				};
 			};
 		};
+		// Add informative headers
+		if (debugHeaders) {
+			localHeaders["X-CloudHop-Target"] = reqHost;
+			localHeaders["X-CloudHop-Health"] = `${localTries}/${maxTries}`;
+			localHeaders["X-CloudHop-Trace"] = backTrace.toString();
+		};
 		localTries --;
 	};
-	return response || wrapHtml(500, "Empty response", `${keepGoing ? "Successful" : "Failed"} empty response from trace: ${backTrace}.<br/>Last requested URL: ${reqUrl.toString()}`);
+	return await adaptResp(response, false, {strip: headerStripDown, set: localHeaders}) || wrapHtml(500, "Empty response", `${keepGoing ? "Successful" : "Failed"} empty response from trace: ${backTrace}.<br/>Last requested URL: ${reqUrl.toString()}`);
 };
 
 export {

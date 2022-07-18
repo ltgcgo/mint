@@ -16,13 +16,14 @@ See [/docs](docs/README.md).
 
 ## Deployment support
 ### Platforms
-| Platform | File |
-| -------- | ---- |
-| AWS Lambda | `node.js` |
-| Cloudflare Workers | `cloudflare.js` |
-| Deno Deploy | `deno.js` |
-| Fly.io | `deno.js` |
-| Netlify | `denoWrap.js` |
+| Platform | File | Supported | Instructions |
+| -------- | ---- | --------- | ------------ |
+| _Your own machine_ | `deno.js` | [x] | [Read](docs/deploy/deno.md) |
+| AWS Lambda | `node.js` | [ ] | N/A |
+| Cloudflare Workers | `cloudflare.js` | [x] | [Read](docs/deploy/cloudflare.md) |
+| Deno Deploy | `deno.js` | [x] | [Read](docs/deploy/denoDeploy.md) |
+| Fly.io | `deno.js` | [ ] | [Read](docs/deploy/flyIo.md) |
+| Netlify | `denoWrap.js` | [ ] | [Read](docs/deploy/netlify.md) |
 
-### Deployment at ease
+### Deployment with ease
 * [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/PoneyClairDeLune/cloudhop)

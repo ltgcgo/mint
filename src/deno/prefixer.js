@@ -1,1 +1,1 @@
-"use strict";import{serve}from"https://deno.land/std/http/server.ts";let eG=(a,b="")=>{return Deno.env.get(a)||b};let pV="Deno",pE=Deno.exit.bind();
+"use strict";import{serve}from"https://deno.land/std/http/server.ts";let eG=(a,b="")=>{return Deno.env.get(a)||b};let pV="Deno",pE=Deno.exit.bind(),pP=true;

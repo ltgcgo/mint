@@ -1,0 +1,31 @@
+[build]
+base = "dist/"
+
+[build.environment]
+FORCE_IN_TLS="tls"
+FORCE_OUT_TLS="tls"
+MASK_IP="spoof"
+MASK_UA="mimic"
+MATCH_LANG="*"
+HEALTH_MAX_TRIES=3
+HEALTH_CRITERIA="loose"
+TIMEOUT_MS=4000
+IDLE_SHUTDOWN=0
+
+[context.production.environment]
+FORCE_IN_TLS="tls"
+FORCE_OUT_TLS="tls"
+MASK_IP="spoof"
+MASK_UA="mimic"
+MATCH_LANG="*"
+HEALTH_MAX_TRIES=3
+HEALTH_CRITERIA="loose"
+TIMEOUT_MS=4000
+IDLE_SHUTDOWN=0
+
+[functions]
+directory = "dist/"
+
+[[edge_functions]]
+function = "denoWrap"
+path = "*"

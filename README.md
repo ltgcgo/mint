@@ -22,3 +22,7 @@ See [/docs](docs/README.md).
 | Cloudflare Workers | `cloudflare.js` |
 | Deno Deploy | `deno.js` |
 | Fly.io | `deno.js` |
+| Netlify | `denoWrap.js` |
+
+### Deployment at ease
+* [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/PoneyClairDeLune)

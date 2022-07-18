@@ -1,0 +1,1 @@
+"use strict";let eG=(a,b="")=>{return Deno.env.get(a)||b};let pV="Wrapped Deno",pE=Deno.exit.bind(),pP=false;

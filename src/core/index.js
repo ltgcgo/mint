@@ -11,6 +11,9 @@ failureCrits = ["client", "server", "loose", "asIs"];
 Array.prototype.random = function () {
 	return this[Math.floor(Math.random() * this.length)];
 };
+Array.prototype.draw = function () {
+	return this.splice(Math.floor(Math.random() * this.length), 1);
+};
 
 // Fetch environment variables
 let debugHeaders = eG("DEBUGGER", "0") == "1";
@@ -18,17 +21,19 @@ let origin = eG("BACKENDS", "internal").split(",");
 let realHost = eG("BACKHOST", "");
 let maskIP = eG("MASK_IP", "strip");
 let maskUA = eG("MASK_UA", "noBracket");
+let followRedir = eG("FOLLOW_REDIR", "0");
 let tlsIn = eG("FORCE_IN_TLS", "asIs");
 let tlsOut = eG("FORCE_OUT_TLS", "asIs");
 let adaptBody = eG("ADAPT_BODY", "0") == "1";
 let matchLang = eG("MATCH_LANG", "*").split(",");
 let maxTries = Math.max(parseInt(eG("HEALTH_MAX_TRIES", "3")), 1);
-let activeCheck = self.isPersPlat && Math.max(parseFloat(eG("HEALTH_ACTIVE", "5")), 15) * 1000;
+let activeCheck = pP ? parseFloat(eG("HEALTH_ACTIVE", "5")) : 0;
+let activePath = eG("HEALTH_PATH");
 let failCrit = eG("HEALTH_CRITERIA", "asIs");
 let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 2500);
-let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "").split(","), "host,cf-connecting-ip,cdn-loop,cf-ew-via,cf-visitor,cf-ray,x-forwarded-for,x-real-ip".split(","));
+let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "").split(","), "host,cf-connecting-ip,cdn-loop,cf-ew-via,cf-visitor,cf-ray,x-forwarded-for,x-real-ip,sec-ch-lang,sec-ch-save-data,sec-ch-width,sec-ch-viewport-width,sec-ch-viewport-height,sec-ch-dpr,sec-ch-device-memory,sec-ch-rtt,sec-ch-downlink,sec-ch-ect,sec-ch-prefers-color-scheme,sec-ch-prefers-reduced-motion,sec-ch-prefers-reduced-transparency,sec-ch-prefers-contrast,sec-ch-forced-colors,sec-ch-ua-full-version,sec-ch-ua-full-version-list,sec-ch-ua-platform-version,sec-ch-ua-arch,sec-ch-ua-bitness,sec-ch-ua-wow64,sec-ch-ua-model".split(","));
 let headerStripDown = headerSet(eG("STRIP_HEADERS", "").split(","), ["alt-svc"]);
-let headerSetUp = headerMap(eG("SET_HEADERS_UP", ""));
+let headerSetUp = headerMap(eG("SET_HEADERS_UP", ""), {"sec-fetch-dest": "document", "sec-fetch-mode": "navigate", "sec-fetch-site": "same-origin"});
 let headerSetDown = headerMap(eG("SET_HEADERS", ""));
 let idleShutdown = parseInt(eG("IDLE_SHUTDOWN", "0"));
 
@@ -45,22 +50,31 @@ console.info(`Backends: ${origin}`);
 console.info(`Host: ${realHost}`);
 console.info(`Masking: UA(${maskUA}), IP(${maskIP}), lang(${matchLang})`);
 console.info(`TLS: in(${tlsIn}), out(${tlsOut});`);
-console.info(`Health: active(${activeCheck}), tries(${maxTries}), crit(${failCrit}), timeout(${timeoutMs}ms)`);
+console.info(`Health: active(${activeCheck}), tries(${maxTries}), crit(${failCrit}), timeout(${timeoutMs}ms), path(${activePath})`);
 console.info(`Inactivity shutdown: ${idleShutdown}`);
 
 let lastActive = Date.now();
-if (idleShutdown > 0) {
-	setInterval(function () {
-		let currentTime = Date.now();
-		if (currentTime - lastActive > idleShutdown) {
-			console.info("Requested idle shutdown.");
-			pE();
-		};
-	}, 1000);
+if (pP) {
+	console.info("Platform persistence available.");
+	if (idleShutdown > 0) {
+		setInterval(function () {
+			let currentTime = Date.now();
+			if (currentTime - lastActive > idleShutdown) {
+				console.info("Requested idle shutdown.");
+				pE();
+			};
+		}, 1000);
+	};
+	// Parse active health checking interval
+	if (activeCheck > 0) {
+		console.info("Active health checking enabled, but not implemented.");
+	};
 };
 
 let handleRequest = async function (request, clientInfo) {
-	lastActive = Date.now();
+	if (idleShutdown > 0) {
+		lastActive = Date.now();
+	};
 	// Generate a pre-determinted response if nothing is configured.
 	if (origin.length == 1 && origin[0] == "internal") {
 		return wrapHtml(503, `Hey, it works!`, `<span id="c">Cloud Hop</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
@@ -99,10 +113,13 @@ let handleRequest = async function (request, clientInfo) {
 	// Prepare for header manipulation
 	let localHeaders = headerSetDown || {};
 	// Passive health check
-	let response, backTrace = [], keepGoing = true, localTries = maxTries, sentHeaders;
+	let response, backTrace = [], keepGoing = true, localTries = maxTries, localOrigin, sentHeaders;
 	while (localTries >= 0 && keepGoing) {
+		if (localOrigin?.length < 1 || !localOrigin) {
+			localOrigin = origin.slice();
+		};
 		// Randomly choose an origin
-		let reqHost = origin.random();
+		let reqHost = localOrigin.draw();
 		let v6EndIdx = reqHost.lastIndexOf("]"),
 		portIdx = reqHost.lastIndexOf(":");
 		backTrace.push(reqHost);
@@ -119,10 +136,13 @@ let handleRequest = async function (request, clientInfo) {
 			repRequest.body = request.body;
 		};
 		// Request header manipulation
+		headerSetUp["host"] = `${realHost?.length > 2 ? realHost : reqHost}`;
 		repRequest.headers = adaptReqHeaders(request.headers, {strip: headerStripUp, set: headerSetUp});
 		if (debugHeaders) {
 			sentHeaders = repRequest.headers;
 		};
+		// Throw an error if received redirects
+		repRequest.redirect = followRedir == "0" ? "manual" : "follow";
 		// Add an abort controller
 		let abortCtrl = AbortSignal.timeout(timeoutMs);
 		repRequest.signal = abortCtrl;
@@ -181,7 +201,9 @@ let handleRequest = async function (request, clientInfo) {
 				};
 			};
 		};
-		lastActive = Date.now();
+		if (idleShutdown > 0) {
+			lastActive = Date.now();
+		};
 		// Add informative headers
 		if (debugHeaders) {
 			localHeaders["X-CloudHop-Target"] = reqHost;

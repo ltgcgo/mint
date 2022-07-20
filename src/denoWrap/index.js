@@ -9,7 +9,12 @@ This file isn't only for Deno Deploy, but all of the one-shot Deno serverless de
 import {handleRequest} from "../core/index.js";
 //import {stripHeader} from "./strip.js";
 
-export default async function (request, connInfo) {
+let serve = async function (request, connInfo) {
 	let clientIp = connInfo.remoteAddr.hostname;
 	return await handleRequest(request, clientIp);
 };
+
+export {
+	serve
+};
+/*export default */

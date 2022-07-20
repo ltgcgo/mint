@@ -37,6 +37,3 @@ See [/docs](docs/README.md).
 | Deno Deploy | `deno.js` | [x] | [Read](docs/deploy/denoDeploy.md) |
 | Fly.io | `deno.js` | [ ] | [Read](docs/deploy/flyIo.md) |
 | Netlify | `denoWrap.js` | [ ] | [Read](docs/deploy/netlify.md) |
-
-### Deployment with ease
-* [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/PoneyClairDeLune/cloudhop)

@@ -3,8 +3,8 @@ All keys and values below are case sensitive. Before successful deployments, mak
 
 * `DEBUGGER`: Add some headers useful in debugging situations.
   * `1`: Enable.
-* `BACKENDS`: _(doesn't work properly, see issue #1)_ Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
-* `BACKHOST`: Define the actual host used. Cannot be used on Cloudflare Workers.
+* `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
+* `BACKHOST`: _(doesn't work properly, see issue #1)_ Define the actual host used. Cannot be used on Cloudflare Workers.
 * `MASK_IP`: _(not implemented)_ How to treat upstream information.
   * `strip`: Do not send any upstream information
   * `give`: Send the real IP address of upstream.
@@ -30,10 +30,10 @@ All keys and values below are case sensitive. Before successful deployments, mak
 * `STRIP_HEADERS`: Headers to strip in responses. Case insensitive, and seperated with `,`.
 * `SET_HEADERS_UP`: Headers to add/set when going upstream. Keys are case insensitive, define values with `=`, and seperated with `,`.
 * `SET_HEADERS`: Headers to add/set in responses. Keys are case insensitive, define values with `=`, and seperated with `,`.
-* `ADAPT_BODY`: _(not implemented)_Whether to replace all origin domains into the worker domain.
+* `ADAPT_BODY`: _(not implemented)_ Whether to replace all origin domains into the worker domain.
   * `1`: Enabled.
   * Any other value would be considered a false value.
-* `MATCH_LANG`: Match the languages against the user agent provided list, and only give the server matched ones. Seperate with commas. `*` for the first user-provided language.
+* `MATCH_LANG`: _(not implemented)_ Match the languages against the user agent provided list, and only give the server matched ones. Seperate with commas. `*` for the first user-provided language.
   * Example: `en` for any English variants, `en_CA` for Canadian English, and `en_GB,en,fr` to match the three languages.
 * `HEALTH_ACTIVE`: _(not implemented)_ Enable active health checks on persistent serverless deployments.
 * `HEALTH_PATH`: _(not implemented)_ The path used to perform active health checks.

@@ -6,12 +6,12 @@ All keys and values below are case sensitive. Before successful deployments, mak
 * `BACKENDS`: Define the actual backends, seperated with commas. Example: `a.example.com` and `a.example.com,b.example.com`
 * `BACKHOST`: _(doesn't work properly, see issue #1)_ Define the actual host used. Cannot be used on Cloudflare Workers.
 * `MASK_IP`: _(not implemented)_ How to treat upstream information.
-  * `strip`: Do not send any upstream information
+  * `strip`: (default) Do not send any upstream information
   * `give`: Send the real IP address of upstream.
-  * `spoof`: (default) Send randomly-generated upstream information.
+  * `spoof`: Send randomly-generated upstream information.
   * `mask:<v4>:<v6>`: Send the masked IP address of upstream, with the masked parts generated randomly. `spoof` acts the same as `mask:32:128`.
   * Any other value would be sent as the fake IP address.
-* `MASK_UA`: _(not implemented)_ How to deal with user agent strings of upstreams.
+* `MASK_UA`: How to deal with user agent strings of upstreams.
   * `asIs`: Do not modify.
   * `noBracket`: (default) Remove any information inside the brackets, and replace them with fake ones correspondingly.
   * `mimic`: Provide fake user agents correspondingly.
@@ -33,7 +33,7 @@ All keys and values below are case sensitive. Before successful deployments, mak
 * `ADAPT_BODY`: _(not implemented)_ Whether to replace all origin domains into the worker domain.
   * `1`: Enabled.
   * Any other value would be considered a false value.
-* `MATCH_LANG`: _(not implemented)_ Match the languages against the user agent provided list, and only give the server matched ones. Seperate with commas. `*` for the first user-provided language.
+* `MATCH_LANG`: Match the languages against the user agent provided list, and only give the server matched ones. Seperate with commas. `*` for the first user-provided language.
   * Example: `en` for any English variants, `en_CA` for Canadian English, and `en_GB,en,fr` to match the three languages.
 * `HEALTH_ACTIVE`: _(not implemented)_ Enable active health checks on persistent serverless deployments.
 * `HEALTH_PATH`: _(not implemented)_ The path used to perform active health checks.

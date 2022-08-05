@@ -2,6 +2,7 @@
 
 import {wrapHtml} from "./genHtml.js";
 import {headerSet, headerMap, adaptResp, adaptReqHeaders} from "./header.js";
+import {langMatch} from "./langMatch.js";
 
 // Constants
 self.pW = "0.2";
@@ -31,7 +32,7 @@ let activeCheck = pP ? parseFloat(eG("HEALTH_ACTIVE", "5")) : 0;
 let activePath = eG("HEALTH_PATH");
 let failCrit = eG("HEALTH_CRITERIA", "asIs");
 let timeoutMs = Math.max(parseInt(eG("TIMEOUT_MS", "0")), 2500);
-let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "").split(","), "host,cf-connecting-ip,cdn-loop,cf-ew-via,cf-visitor,cf-ray,x-forwarded-for,x-real-ip,sec-ch-lang,sec-ch-save-data,sec-ch-prefers-color-scheme,sec-ch-prefers-reduced-motion,sec-ch-prefers-reduced-transparency,sec-ch-prefers-contrast,sec-ch-forced-colors,sec-ch-ua-full-version,sec-ch-ua-full-version-list,sec-ch-ua-platform-version,sec-ch-ua-arch,sec-ch-ua-bitness,sec-ch-ua-wow64,sec-ch-ua-model,viewport-width,viewport-height,dpr,device-memory,rtt,downlink,ect,sec-ch-viewport-width,sec-ch-viewport-height,sec-ch-dpr,sec-ch-device-memory,sec-ch-rtt,sec-ch-downlink,sec-ch-ect".split(","));
+let headerStripUp = headerSet(eG("STRIP_HEADERS_UP", "").split(","), "host,cf-connecting-ip,cdn-loop,cf-ew-via,cf-visitor,cf-ray,x-forwarded-for,x-real-ip,accept-language,sec-ch-lang,sec-ch-save-data,sec-ch-prefers-color-scheme,sec-ch-prefers-reduced-motion,sec-ch-prefers-reduced-transparency,sec-ch-prefers-contrast,sec-ch-forced-colors,sec-ch-ua-full-version,sec-ch-ua-full-version-list,sec-ch-ua-platform-version,sec-ch-ua-arch,sec-ch-ua-bitness,sec-ch-ua-wow64,sec-ch-ua-model,viewport-width,viewport-height,dpr,device-memory,rtt,downlink,ect,sec-ch-viewport-width,sec-ch-viewport-height,sec-ch-dpr,sec-ch-device-memory,sec-ch-rtt,sec-ch-downlink,sec-ch-ect".split(","));
 let headerStripDown = headerSet(eG("STRIP_HEADERS", "").split(","), ["alt-svc"]);
 let headerSetUp = headerMap(eG("SET_HEADERS_UP", ""), {"sec-fetch-dest": "document", "sec-fetch-mode": "navigate", "sec-fetch-site": "same-origin"});
 let headerSetDown = headerMap(eG("SET_HEADERS", ""));
@@ -108,10 +109,16 @@ let handleRequest = async function (request, clientInfo) {
 			break;
 		};
 	};
-	// Generate fake origin if it's set
-	// Match languages
+	// Get deployment host
+	let depHost = request.headers.get("Host") || "";
 	// Prepare for header manipulation
 	let localHeaders = headerSetDown || {};
+	// Match languages
+	let useLang = "", reqLangList = request.headers.get("Accept-Language") || "";
+	useLang = langMatch(reqLangList, matchLang);
+	if (useLang?.length > 0) {
+		headerSetUp["Accept-Language"] = useLang;
+	};
 	// Passive health check
 	let response, backTrace = [], keepGoing = true, localTries = maxTries, localOrigin, sentHeaders;
 	while (localTries >= 0 && keepGoing) {
@@ -127,7 +134,7 @@ let handleRequest = async function (request, clientInfo) {
 		reqUrl.port = "";
 		// Report the selected origin
 		if (debugHeaders) {
-			console.info(`Tries: ${localTries}, target: ${request.method} ${reqUrl.protocol}//${reqHost}/`);
+			console.info(`Tries: ${localTries}, lang: ${useLang || "blank"}, target: ${request.method} ${reqUrl.protocol}//${reqHost}/`);
 		};
 		// Partially clone the request object
 		let repRequest = {};
@@ -136,7 +143,19 @@ let handleRequest = async function (request, clientInfo) {
 			repRequest.body = request.body;
 		};
 		// Request header manipulation
-		headerSetUp["host"] = `${realHost?.length > 2 ? realHost : reqHost}`;
+		// Use the correct Host header
+		headerSetUp["Host"] = `${realHost?.length > 2 ? realHost : reqHost}`;
+		// Match Origin and Referer
+		// Port can be a great problem!!
+		let reqOrigin = request.headers.get("origin");
+		let reqReferer = request.headers.get("referer");
+		if (reqOrigin?.length > 0) {
+			headerSetUp["Origin"] = reqOrigin.replaceAll(depHost, reqHost);
+		};
+		if (reqReferer?.length > 0) {
+			headerSetUp["Referer"] = reqReferer.replaceAll(depHost, reqHost);
+		};
+		// Apply header modifications
 		repRequest.headers = adaptReqHeaders(request.headers, {strip: headerStripUp, set: headerSetUp});
 		if (debugHeaders) {
 			sentHeaders = repRequest.headers;

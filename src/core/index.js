@@ -5,7 +5,7 @@ import {headerSet, headerMap, adaptResp, adaptReqHeaders} from "./header.js";
 import {langMatch} from "./langMatch.js";
 import {uaSpread} from "./uaSpread.js";
 
-// Strings (only works in bundled results)
+// Strings shorthand (only works in bundled results)
 String.prototype.has = String.prototype.includes;
 Array.prototype.has = Array.prototype.includes;
 

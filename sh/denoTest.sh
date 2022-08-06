@@ -9,7 +9,7 @@ export SET_HEADERS_UP=upgrade-insecure-requests=1
 export SET_HEADERS=x-cloudhop-debug=experimental
 export HEALTH_MAX_TRIES=4
 export HEALTH_CRITERIA=loose
-export MASK_UA=mimic
+export MASK_UA=noBracket
 export MASK_IP=spoof
 export MATCH_LANG=en-US,en,*
 export TIMEOUT_MS=4000

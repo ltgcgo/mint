@@ -168,11 +168,13 @@ let handleRequest = async function (request, clientInfo) {
 				});
 				remoteWsService.addEventListener("error", function (ev) {
 					if (debugHeaders) {
-						console.error(`WebSocket transmission error on remote: ${ev}`);
+						console.error(`WebSocket transmission error on remote: ${ev.name}`);
 					};
 				});
 				remoteWsService.addEventListener("message", function (ev) {
-					socket.send(ev.data);
+					if (socket.readyState == 1) {
+						socket.send(ev.data);
+					};
 				});
 			});
 			socket.addEventListener("close", function () {
@@ -180,7 +182,7 @@ let handleRequest = async function (request, clientInfo) {
 			});
 			socket.addEventListener("error", function (ev) {
 				if (debugHeaders) {
-					console.error(`WebSocket transmission error on Cloud Hop: ${ev}`);
+					console.error(`WebSocket transmission error on Cloud Hop: ${ev.name}`);
 				};
 			});
 			socket.addEventListener("message", function (ev) {

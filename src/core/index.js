@@ -110,7 +110,8 @@ let handleRequest = async function (request, clientInfo) {
 	switch (tlsOut) {
 		case "tls":
 		case "plain": {
-			reqUrl.protocol = [(detProtIdx >> 1 << 1) + +(tlsOut == "tls")] || reqUrl.protocol;
+			reqUrl.protocol = allowedProtos[(detProtIdx >> 1 << 1) + +(tlsOut == "tls")] || reqUrl.protocol;
+			console.debug(`${reqUrl.protocol}`);
 			break;
 		};
 	};

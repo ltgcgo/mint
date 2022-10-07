@@ -1,8 +1,8 @@
 #!/bin/bash
-export BACKENDS=browserleaks.com
+export BACKENDS=deb.ltgc.cc
 export DEBUGGER=1
 export FOLLOW_REDIR=1
-export FORCE_OUT_TLS=plain
+export FORCE_OUT_TLS=tls
 export STRIP_HEADERS_UP=Sec-Fetch-User,Sec-Fetch-Site,Sec-Fetch-Mode,Sec-Fetch-Dest
 export STRIP_HEADERS=expect-ct,nel,report-to
 export SET_HEADERS_UP=upgrade-insecure-requests=1

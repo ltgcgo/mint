@@ -1,5 +1,5 @@
 #!/bin/bash
-export BACKENDS=deb.ltgc.cc
+export BACKENDS=browserleaks.com
 export DEBUGGER=1
 export FOLLOW_REDIR=1
 export FORCE_OUT_TLS=tls

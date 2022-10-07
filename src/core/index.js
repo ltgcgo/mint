@@ -111,7 +111,6 @@ let handleRequest = async function (request, clientInfo) {
 		case "tls":
 		case "plain": {
 			reqUrl.protocol = allowedProtos[(detProtIdx >> 1 << 1) + +(tlsOut == "tls")] || reqUrl.protocol;
-			console.debug(`${reqUrl.protocol}`);
 			break;
 		};
 	};
@@ -143,6 +142,55 @@ let handleRequest = async function (request, clientInfo) {
 		// Report the selected origin
 		if (debugHeaders) {
 			console.info(`Tries: ${localTries}, lang: ${useLang || "blank"}, target: ${request.method} ${reqUrl.protocol}//${reqHost}/`);
+		};
+		// Let the WebSocket forwarder deal with WS connections
+		if (request.headers.get("Upgrade")?.toLowerCase() == "websocket") {
+			let {socket, response} = Deno.upgradeWebSocket(request);
+			if (debugHeaders) {
+				console.info(`Upgrading to a WebSocket connection...`);
+			};
+			let remoteWsService, dataQueue = [];
+			socket.addEventListener("open", function () {
+				remoteWsService = new WebSocket(reqUrl.toString().replace("http", "ws"));
+				remoteWsService.addEventListener("close", function () {
+					socket.close();
+				});
+				remoteWsService.addEventListener("open", function () {
+					if (dataQueue.length > 0) {
+						dataQueue.forEach(function (e) {
+							remoteWsService.send(e);
+						});
+						dataQueue = undefined;
+					};
+					if (debugHeaders) {
+						console.info(`WebSocket connection established.`);
+					};
+				});
+				remoteWsService.addEventListener("error", function (ev) {
+					if (debugHeaders) {
+						console.error(`WebSocket transmission error on remote: ${ev}`);
+					};
+				});
+				remoteWsService.addEventListener("message", function (ev) {
+					socket.send(ev.data);
+				});
+			});
+			socket.addEventListener("close", function () {
+				remoteWsService?.close();
+			});
+			socket.addEventListener("error", function (ev) {
+				if (debugHeaders) {
+					console.error(`WebSocket transmission error on Cloud Hop: ${ev}`);
+				};
+			});
+			socket.addEventListener("message", function (ev) {
+				if (remoteWsService?.readyState == 1) {
+					remoteWsService.send(ev.data);
+				} else {
+					dataQueue.push(ev.data);
+				};
+			});
+			return response;
 		};
 		// Partially clone the request object
 		let repRequest = {};

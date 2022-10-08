@@ -146,16 +146,11 @@ let handleRequest = async function (request, clientInfo) {
 		// Let the WebSocket forwarder deal with WS connections
 		if (request.headers.get("Upgrade")?.toLowerCase() == "websocket") {
 			let {socket, response} = Deno.upgradeWebSocket(request);
-			if (debugHeaders) {
-				console.info(`Upgrading to a WebSocket connection...`);
-			};
 			let remoteWsService, dataQueue = [];
 			socket.addEventListener("open", function () {
 				remoteWsService = new WebSocket(reqUrl.toString().replace("http", "ws"));
 				remoteWsService.addEventListener("close", function () {
-					console.info(5);
 					socket.close();
-					console.info(6);
 				});
 				remoteWsService.addEventListener("open", function () {
 					if (dataQueue.length > 0) {
@@ -188,7 +183,7 @@ let handleRequest = async function (request, clientInfo) {
 			});
 			socket.addEventListener("error", function (ev) {
 				if (debugHeaders) {
-					console.error(`WebSocket transmission error on Cloud Hop: ${ev.name}`);
+					console.error(`WebSocket transmission error on Cloud Hop: ${ev.message}`);
 				};
 			});
 			socket.addEventListener("message", function (ev) {

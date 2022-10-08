@@ -4,7 +4,7 @@ type = "javascript"
 account_id = ""
 workers_dev = true
 zone_id = ""
-compatibility_date = "2022-07-16"
+compatibility_date = "2022-09-21"
 
 [build]
 
@@ -22,9 +22,10 @@ STRIP_HEADERS_UP="Sec-Fetch-User,Sec-Fetch-Site,Sec-Fetch-Mode,Sec-Fetch-Dest"
 SET_HEADERS="x-cloudhop-debug=debug"
 MATCH_LANG="en_US,en,*"
 HEALTH_MAX_TRIES=5
-HEALTH_CRITERIA="client"
+HEALTH_CRITERIA="loose"
 TIMEOUT_MS=4000
 IDLE_SHUTDOWN=0
+BACKENDS="browserleaks.com"
 
 [env.prod.vars]
 FORCE_IN_TLS="tls"
@@ -36,3 +37,4 @@ HEALTH_MAX_TRIES=3
 HEALTH_CRITERIA="loose"
 TIMEOUT_MS=4000
 IDLE_SHUTDOWN=0
+BACKENDS="browserleaks.com"

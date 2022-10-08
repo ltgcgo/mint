@@ -168,7 +168,7 @@ let handleRequest = async function (request, clientInfo) {
 				});
 				remoteWsService.addEventListener("error", function (ev) {
 					if (debugHeaders) {
-						console.error(`WebSocket transmission error on remote: ${ev.name}`);
+						console.error(`WebSocket transmission error on remote. ${ev.type}${ev.message ? ": " : ""}${ev.message || ""}`);
 					};
 				});
 				remoteWsService.addEventListener("message", function (ev) {
@@ -177,7 +177,9 @@ let handleRequest = async function (request, clientInfo) {
 					};
 				});
 			});
+			try {
 			socket.addEventListener("close", function () {
+				console.error(`WebSocket transmission closed.`);
 				remoteWsService?.close();
 			});
 			socket.addEventListener("error", function (ev) {
@@ -191,7 +193,9 @@ let handleRequest = async function (request, clientInfo) {
 				} else {
 					dataQueue.push(ev.data);
 				};
-			});
+			});} catch (err) {
+				console.error(err.stack);
+			};
 			return response;
 		};
 		// Partially clone the request object
@@ -229,7 +233,7 @@ let handleRequest = async function (request, clientInfo) {
 		let newReq = new Request(reqUrl.toString(), repRequest);
 		// Send the request
 		try {
-			response = await fetch(reqUrl, newReq);
+			response = await fetch(reqUrl.toString(), newReq);
 			// Test if the response matches criteria
 			//backTrace[backTrace.length - 1] = `${reqHost}(${response.status?.toString() || "000"})`;
 			switch(Math.floor(response.status / 100)) {

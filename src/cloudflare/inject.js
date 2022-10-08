@@ -5,8 +5,34 @@
 let upgradeWebSocket = function (request) {
 	let [client, socket] = Object.values(new WebSocketPair());
 	socket.accept();
+	let addEL = socket.addEventListener;
+	Object.defineProperty(socket, "addEventListener", {value: function (type, ...args) {
+		if (type == "open") {
+			args[0].call(socket);
+		} else {
+			addEL.call(socket, type, ...args);
+		};
+	}});
+	/* let socketProxy = new Proxy(socket, {
+		set(obj, key, value) {
+			obj[key] = value;
+		},
+		get(obj, key) {
+			if (key == "addEventListener") {
+				return function (type, ...args) {
+					if (type == "open") {
+						args[0]();
+					} else {
+						obj.addEventListener(type, ...args);
+					};
+				};
+			} else {
+				return obj[key];
+			};
+		}
+	}); */
 	return {
-		socket,
+		socket: socket,
 		response: new Response(null, {
 			status: 101,
 			webSocket: client
@@ -81,13 +107,16 @@ let WebSocket = class {
 	get url() {
 		return this.#url;
 	};
+	get readyState() {
+		return this.#target.readyState;
+	};
 	constructor(url) {
 		let wsTarget = url,
 		protIdx = url.indexOf("ws");
 		if (protIdx == 0) {
-			wsTarget = protIdx.replace("ws", "http");
+			wsTarget = url.replace("ws", "http");
 		};
-		this.#url = url;
+		this.#url = wsTarget;
 		this.#getWsObj(wsTarget);
 	};
 };

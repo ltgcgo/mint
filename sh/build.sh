@@ -8,7 +8,7 @@ rm -rv dist/*
 #esbuild --bundle src/index.js --target=es6 --outfile=dist/index.es6.js --minify --sourcemap
 ls -1 src | while IFS= read -r dir ; do
 	if [ -e "src/${dir}/index.js" ] ; then
-		shx live $dir --minify > /dev/null
+		shx live $dir ${1:---minify} > /dev/null
 	fi
 done
 rm -rv proxy/*.map

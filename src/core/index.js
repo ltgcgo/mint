@@ -153,7 +153,9 @@ let handleRequest = async function (request, clientInfo) {
 			socket.addEventListener("open", function () {
 				remoteWsService = new WebSocket(reqUrl.toString().replace("http", "ws"));
 				remoteWsService.addEventListener("close", function () {
+					console.info(5);
 					socket.close();
+					console.info(6);
 				});
 				remoteWsService.addEventListener("open", function () {
 					if (dataQueue.length > 0) {
@@ -168,7 +170,9 @@ let handleRequest = async function (request, clientInfo) {
 				});
 				remoteWsService.addEventListener("error", function (ev) {
 					if (debugHeaders) {
-						console.error(`WebSocket transmission error on remote. ${ev.type}${ev.message ? ": " : ""}${ev.message || ""}`);
+						console.info(1);
+						console.error(`WebSocket transmission error on remote${ev.message ? ": " : ""}${ev.message || ""}.`);
+						console.info(2);
 					};
 				});
 				remoteWsService.addEventListener("message", function (ev) {

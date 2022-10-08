@@ -13,24 +13,6 @@ let upgradeWebSocket = function (request) {
 			addEL.call(socket, type, ...args);
 		};
 	}});
-	/* let socketProxy = new Proxy(socket, {
-		set(obj, key, value) {
-			obj[key] = value;
-		},
-		get(obj, key) {
-			if (key == "addEventListener") {
-				return function (type, ...args) {
-					if (type == "open") {
-						args[0]();
-					} else {
-						obj.addEventListener(type, ...args);
-					};
-				};
-			} else {
-				return obj[key];
-			};
-		}
-	}); */
 	return {
 		socket: socket,
 		response: new Response(null, {
@@ -52,11 +34,30 @@ let WebSocket = class {
 		onerror: [],
 		onmessage: [],
 		onopen: [],
+		close () {},
+		readyState: 0,
 		isDummy: true
 	};
 	#url = "";
 	#getWsObj = async function (url) {
-		let reply = await fetch(url, {
+		let upThis = this;
+		let timeout = AbortSignal.timeout(5000);
+		let reply;
+		let failure = function () {
+			let error = new Error("Bad WebSocket handshake");
+			upThis.#target?.onerror?.forEach(function (e) {
+				e[0](error);
+			});
+			upThis.#target?.onclose?.forEach(function (e) {
+				e[0]();
+			});
+		};
+		timeout.addEventListener("abort", function () {
+			if (!reply || reply?.readyState != 1) {
+				failure();
+			};
+		});
+		reply = await fetch(url, {
 			headers: {
 				"Upgrade": "websocket"
 			}
@@ -75,20 +76,13 @@ let WebSocket = class {
 			this.#target.onopen.forEach(function (e) {
 				handle.addEventListener("open", ...e);
 			});
-			this.#target = handle;
+			handle.addEventListener("error", function () {
+				handle.close();
+			});
 			handle.accept();
+			this.#target = handle;
 		} else {
-			if (this.#target.onerror?.length > 0) {
-				this.#target.onerror.forEach(function (e) {
-					e[0]();
-				});
-			};
-			if (this.#target.onclose?.length > 0) {
-				this.#target.onclose.forEach(function (e) {
-					e[0]();
-				});
-			};
-			throw Error("Bad WebSocket handshake");
+			failure();
 		};
 	};
 	addEventListener(...args) {
@@ -99,7 +93,7 @@ let WebSocket = class {
 		};
 	};
 	close(...args) {
-		this.#target?.close(...args);
+		this.#target.close(...args);
 	};
 	send(...args) {
 		this.#target?.send(...args);

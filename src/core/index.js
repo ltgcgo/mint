@@ -51,10 +51,10 @@ if (idleShutdown > 0) {
 };
 
 // Server console messages
-console.info(`Debug mode: ${debugHeaders ? "on" : "off"}`);
+console.info(`Debug: ${debugHeaders ? "on" : "off"}`);
 console.info(`Backends: ${origin}`);
-console.info(`Host: ${realHost}`);
-console.info(`Masking: UA(${maskUA}), IP(${maskIP}), lang(${matchLang})`);
+//console.info(`Host: ${realHost}`);
+console.info(`Mask: UA(${maskUA}), IP(${maskIP}), lang(${matchLang})`);
 console.info(`TLS: in(${tlsIn}), out(${tlsOut});`);
 console.info(`Health: active(${activeCheck}), tries(${maxTries}), crit(${failCrit}), timeout(${timeoutMs}ms), path(${activePath})`);
 console.info(`Inactivity shutdown: ${idleShutdown}`);
@@ -281,6 +281,8 @@ let handleRequest = async function (request, clientInfo) {
 						//backTrace[backTrace.length - 1] = `${reqHost}(UNK)`;
 					};
 				};
+			} else {
+				response = wrapHtml(500, "Internal error", `<pre>${err}${err.stack ? "\n" + err.stack : ""}</pre>`);
 			};
 		};
 		if (idleShutdown > 0) {
@@ -288,7 +290,7 @@ let handleRequest = async function (request, clientInfo) {
 		};
 		// Add informative headers
 		if (debugHeaders) {
-			localHeaders["X-CloudHop-Target"] = reqHost;
+			localHeaders["X-CloudHop-Target"] = reqUrl.toString();
 			localHeaders["X-CloudHop-Health"] = `${localTries}/${maxTries}`;
 			localHeaders["X-CloudHop-Trace"] = backTrace.toString();
 			localHeaders["X-CloudHop-Up"] = JSON.stringify(sentHeaders);

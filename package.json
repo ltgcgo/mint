@@ -1,0 +1,39 @@
+{
+	"name": "cloudhop",
+	"version": "0.3",
+	"description": "⛈ Easy-to-configure load balancing, available as serverless functions.",
+	"keywords": [
+		"bun js",
+		"cloud hop",
+		"cloudflare workers",
+		"cloudhop",
+		"deno deploy",
+		"denoland",
+		"load balancer",
+		"reverse proxy",
+		"serverless functions"
+	],
+	"homepage": "https://github.com/PoneyClairDeLune/cloudhop",
+	"bugs": {
+		"url": "https://github.com/PoneyClairDeLune/cloudhop/issues"
+	},
+	"license": "LGPL-3.0-only",
+	"author": "Lumière Élevé (https://github.com/PoneyClairDeLune)",
+	"funding": [{
+		"type": "individual",
+		"url": "monero:82rPQDB7JVgYfF4TLTz4JJTM9ibYXw9G7BSQ2CE7ixqtYnYjNYPagJoUUhmmXaGfBvjRZ3TWdabP7FngbWXkdSfv23VEo1M"
+	}],
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"os": [
+		"linux",
+		"darwin",
+		"android",
+		"windows"
+	],
+	"cpu": [
+		"x64",
+		"arm64"
+	]
+}

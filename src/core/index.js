@@ -10,7 +10,7 @@ String.prototype.has = String.prototype.includes;
 Array.prototype.has = Array.prototype.includes;
 
 // Constants
-self.pW = "0.2";
+self.pW = "0.3";
 const allowedProtos = ["http:", "https:", "ws:", "wss:"],
 failureCrits = ["client", "server", "loose", "asIs"];
 
@@ -165,9 +165,7 @@ let handleRequest = async function (request, clientInfo) {
 				});
 				remoteWsService.addEventListener("error", function (ev) {
 					if (debugHeaders) {
-						console.info(1);
 						console.error(`WebSocket transmission error on remote${ev.message ? ": " : ""}${ev.message || ""}.`);
-						console.info(2);
 					};
 				});
 				remoteWsService.addEventListener("message", function (ev) {
@@ -282,7 +280,7 @@ let handleRequest = async function (request, clientInfo) {
 					};
 				};
 			} else {
-				response = wrapHtml(500, "Internal error", `<pre>${err}${err.stack ? "\n" + err.stack : ""}</pre>`);
+				response = wrapHtml(500, "Internal error", `${debugHeaders ? "Tried to access: " + reqUrl.href + "<br/>" : ""}<pre>${err}${debugHeaders && err.stack ? "\n" + err.stack : ""}</pre>`);
 			};
 		};
 		if (idleShutdown > 0) {

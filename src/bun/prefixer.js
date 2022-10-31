@@ -1,1 +1,1 @@
-"use strict";let eG=(a,b="")=>{return process.env[a]||b};let pV="Bun",pE=()=>{},pP=true;
+"use strict";let eG=(a,b="")=>{return Bun.env[a]||b};let pV="Bun",pE=()=>{},pP=true;

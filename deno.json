@@ -1,0 +1,5 @@
+{
+	"tasks": {
+		"run": "deno run --allow-net --allow-env dist/deno.js"
+	}
+}

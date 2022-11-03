@@ -1,6 +1,6 @@
 {
 	"name": "cloudhop",
-	"version": "0.3",
+	"version": "0.2.2",
 	"description": "⛈ Easy-to-configure load balancing, available as serverless functions.",
 	"keywords": [
 		"bun js",
@@ -35,5 +35,13 @@
 	"cpu": [
 		"x64",
 		"arm64"
+	],
+	"files": [
+		"dist/*",
+		"shx",
+		"sh/nodeTest.sh",
+		"sh/denoTest.sh",
+		"sh/wranglerTest.sh",
+		"sh/bunTest.sh"
 	]
 }

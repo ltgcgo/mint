@@ -1,0 +1,21 @@
+{
+	"version": "2.0",
+	"routeKey": "$default",
+	"rawPath": <String> (location.pathname),
+	"rawQueryString": <String> (location.search.replace('?', ''),
+	"headers": <Object>,
+	"queryStringParameters": <Object>,
+	"requestContext": {
+		"accountId": "anonymous",
+		"apiId": "exampleInstance",
+		"domainName": "exampleInstance.lambda-url.region.on.aws",
+		"domainPrefix": "exampleInstance",
+		"http": {},
+		"requestId": "<uuid>",
+		"routeKey": "$default",
+		"stage": "$default",
+		"time": "1/Jan/1970:00:00:00 +0000",
+		"timeEpoch": 0
+	},
+	"isBase64Encoded": false
+}

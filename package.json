@@ -1,6 +1,6 @@
 {
-	"name": "cloudhop",
-	"version": "0.3",
+	"name": "mint-flower",
+	"version": "0.3.0",
 	"description": "⛈ Easy-to-configure load balancing, available as serverless functions.",
 	"keywords": [
 		"bun js",

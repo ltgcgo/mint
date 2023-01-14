@@ -1,4 +1,5 @@
 #!/bin/bash
+export LISTEN_PORT=8000
 export BACKENDS=browserleaks.com
 export DEBUGGER=1
 export FOLLOW_REDIR=1

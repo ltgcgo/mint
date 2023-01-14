@@ -1,15 +1,23 @@
 #!/bin/bash
 rm -rv proxy/${1:default}*
 inject=" "
+prefix=""
+affix=""
 format="iife"
 ext="js"
 if [ -e "src/${1:-default}/inject.js" ] ; then
 	inject="--inject:src/${1:-default}/inject.js"
 fi
+if [ -e "src/${1:-default}/prefix.js" ] ; then
+	Aprefix="--banner:js='$(cat src/${1:-default}/prefix.js)'"
+fi
+if [ -e "src/${1:-default}/affix.js" ] ; then
+	Aaffix="--footer:js=src/${1:-default}/affix.js"
+fi
 if [ -e "src/${1:-default}/index.mjs" ] ; then
 	format="esm"
-	#ext="mjs"
+	ext="mjs"
 fi
-esbuild --bundle src/${1:-default}/index.js $inject --format=$format --outfile=proxy/${1:-default}.js ${2:---minify-whitespace --minify-syntax --sourcemap}
-cat proxy/${1:-default}.js
+esbuild --bundle src/${1:-default}/index.js $prefix $affix $inject --charset=utf8 --format=$format --outfile=proxy/${1:-default}.${ext} ${2:---minify-whitespace --minify-syntax --sourcemap}
+cat proxy/${1:-default}.${ext}
 exit

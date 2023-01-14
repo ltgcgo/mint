@@ -14,8 +14,8 @@ done
 rm -rv proxy/*.map
 # Finalizing most builds
 ls -1 src | while IFS= read -r dir ; do
-	if [ -e "src/${dir}/prefixer.js" ] ; then
-		cat src/${dir}/prefixer.js > dist/${dir}.js
+	if [ -e "src/${dir}/prefix.js" ] ; then
+		cat src/${dir}/prefix.js > dist/${dir}.js
 	fi
 	if [ -e "proxy/${dir}.js" ] ; then
 		cat proxy/${dir}.js >> dist/${dir}.js

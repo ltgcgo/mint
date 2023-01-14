@@ -22,7 +22,7 @@ ls -1 src | while IFS= read -r dir ; do
 	fi
 done
 # Node specific
-mkdir -p proxy/node
-mv dist/node.js proxy/node/index.js
-rm proxy/node.js
+#mkdir -p proxy/node
+#mv dist/node.js proxy/node/index.js
+#rm proxy/node.js
 exit

@@ -1,4 +1,6 @@
 *.swp
+deno.lock
+package-lock.json
 /dist/*.map
 /proxy/*
 /lib/*

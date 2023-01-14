@@ -1,5 +1,5 @@
 #!/bin/bash
-export LISTEN_PORT=8005
+export LISTEN_PORT=8000
 export BACKENDS=browserleaks.com
 export DEBUGGER=1
 export FOLLOW_REDIR=1
@@ -15,5 +15,5 @@ export MASK_IP=spoof
 export MATCH_LANG=en-US,en,*
 export TIMEOUT_MS=4000
 export IDLE_SHUTDOWN=0
-deno run --allow-net --allow-env dist/deno.js
+node dist/node.js
 exit

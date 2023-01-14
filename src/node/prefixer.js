@@ -1,1 +1,0 @@
-"use strict";let eG=(a,b="")=>{return process.env[a]||b};let pV="Node",pE=process.exit.bind();let self=globalThis;

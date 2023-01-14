@@ -1,5 +1,6 @@
 {
 	"name": "mint-flower",
+	"type": "module",
 	"version": "0.3.0",
 	"description": "⛈ Easy-to-configure load balancing, available as serverless functions.",
 	"keywords": [
@@ -19,10 +20,12 @@
 	},
 	"license": "LGPL-3.0-only",
 	"author": "Lumière Élevé (https://github.com/PoneyClairDeLune)",
-	"funding": [{
-		"type": "individual",
-		"url": "monero:82rPQDB7JVgYfF4TLTz4JJTM9ibYXw9G7BSQ2CE7ixqtYnYjNYPagJoUUhmmXaGfBvjRZ3TWdabP7FngbWXkdSfv23VEo1M"
-	}],
+	"funding": [
+		{
+			"type": "individual",
+			"url": "monero:82rPQDB7JVgYfF4TLTz4JJTM9ibYXw9G7BSQ2CE7ixqtYnYjNYPagJoUUhmmXaGfBvjRZ3TWdabP7FngbWXkdSfv23VEo1M"
+		}
+	],
 	"engines": {
 		"node": ">=18.0.0"
 	},
@@ -43,5 +46,8 @@
 		"sh/denoTest.sh",
 		"sh/wranglerTest.sh",
 		"sh/bunTest.sh"
-	]
+	],
+	"dependencies": {
+		"ws": "^8.12.0"
+	}
 }

@@ -1,0 +1,17 @@
+{
+	"BACKENDS": "browserleaks.com",
+	"DEBUGGER": "1",
+	"FOLLOW_REDIR": "1",
+	"FORCE_OUT_TLS": "tls",
+	"STRIP_HEADERS_UP": "Sec-Fetch-User,Sec-Fetch-Site,Sec-Fetch-Mode,Sec-Fetch-Dest",
+	"STRIP_HEADERS": "expect-ct,nel,report-to",
+	"SET_HEADERS_UP": "upgrade-insecure-requests=1",
+	"SET_HEADERS": "x-cloudhop-debug=experimental",
+	"HEALTH_MAX_TRIES": "4",
+	"HEALTH_CRITERIA": "loose",
+	"MASK_UA": "noBracket",
+	"MASK_IP": "spoof",
+	"MATCH_LANG": "en-US,en,*",
+	"TIMEOUT_MS": "4000",
+	"IDLE_SHUTDOWN": "0"
+}

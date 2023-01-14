@@ -83,7 +83,7 @@ let handleRequest = async function (request, clientInfo) {
 	};
 	// Generate a pre-determinted response if nothing is configured.
 	if (origin.length == 1 && origin[0] == "internal") {
-		return wrapHtml(503, `Hey, it works!`, `<span id="c">Mint</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
+		return wrapHtml(503, `Hey, it works!`, `<a id="c" href="https://github.com/ltgcgo/mint/" target="_blank">Mint</a> is now deployed to this platform. Please refer to the documentation for further configuration.`);
 	};
 	let reqUrl = new URL(request.url);
 	// Give an error page when protocol mismatch
@@ -290,15 +290,15 @@ let handleRequest = async function (request, clientInfo) {
 		};
 		// Add informative headers
 		if (debugHeaders) {
-			localHeaders["X-CloudHop-Target"] = reqUrl.toString();
-			localHeaders["X-CloudHop-Health"] = `${localTries}/${maxTries}`;
-			localHeaders["X-CloudHop-Trace"] = backTrace.toString();
-			localHeaders["X-CloudHop-Up"] = JSON.stringify(sentHeaders);
+			localHeaders["X-MintFlower-Target"] = reqUrl.toString();
+			localHeaders["X-MintFlower-Health"] = `${localTries}/${maxTries}`;
+			localHeaders["X-MintFlower-Trace"] = backTrace.toString();
+			localHeaders["X-MintFlower-Up"] = JSON.stringify(sentHeaders);
 		};
 		// Give an error if tried too many times
 		if (localTries <= 1 && !response) {
 			response = wrapHtml(502, `Bad gateway`, `Passive health check count exceeded${debugHeaders ? ": " + backTrace : ""}.`);
-			localHeaders["X-CloudHop-Health"] = `0/${maxTries}`;
+			localHeaders["X-MintFlower-Health"] = `0/${maxTries}`;
 			return await adaptResp(response, false, {set: localHeaders});
 		};
 		localTries --;

@@ -6,7 +6,7 @@ Read before deploying Mint to your desired platforms.
 
 ### Deployment
 - [x] [Deno](deploy/deno.md) (Deno)
-- [ ] [Node.js](deploy/node.md) (Node)
+- [x] [Node.js](deploy/node.md) (Node)
 - [x] [Cloudflare Workers](deploy/cloudflare.md) (Service Worker)
 - [x] [Deno Deploy](deploy/denoDeploy.md) (Deno)
 - [ ] [AWS Lambda](deploy/lambda.md) (Node)

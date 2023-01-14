@@ -18,7 +18,7 @@ See [/docs](docs/README.md).
 | Platform | File | Supported | Instructions |
 | -------- | ---- | --------- | ------------ |
 | Deno | `deno.js` | ✓ | [Read](docs/deploy/deno.md) |
-| Node.js | `node.js` | ✕ | [Read](docs/deploy/node.md) |
+| Node.js | `node.js` | ✓ | [Read](docs/deploy/node.md) |
 | Cloudflare Workers | `cloudflare.js` | ✓ | [Read](docs/deploy/cloudflare.md) |
 | Deno Deploy | `deno.js` | ✓ | [Read](docs/deploy/denoDeploy.md) |
 | AWS Lambda | `lambda.js` | ✕ | [Read](docs/deploy/lambda.md) |

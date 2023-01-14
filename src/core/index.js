@@ -83,13 +83,13 @@ let handleRequest = async function (request, clientInfo) {
 	};
 	// Generate a pre-determinted response if nothing is configured.
 	if (origin.length == 1 && origin[0] == "internal") {
-		return wrapHtml(503, `Hey, it works!`, `<span id="c">Cloud Hop</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
+		return wrapHtml(503, `Hey, it works!`, `<span id="c">Mint</span> is now deployed to this platform. Please refer to the documentation for further configuration.`);
 	};
 	let reqUrl = new URL(request.url);
 	// Give an error page when protocol mismatch
 	let detProtIdx = allowedProtos.indexOf(reqUrl.protocol);
 	if (detProtIdx == -1) {
-		return wrapHtml(400, `Unsupported`, `Protocol "${reqUrl.protocol}" is not supported by <span id="c">Cloud Hop</span>.`);
+		return wrapHtml(400, `Unsupported`, `Protocol "${reqUrl.protocol}" is not supported by <span id="c">Mint</span>.`);
 	};
 	// Testing inbound TLS settings
 	switch (tlsIn) {
@@ -176,12 +176,14 @@ let handleRequest = async function (request, clientInfo) {
 			});
 			try {
 			socket.addEventListener("close", function () {
-				console.error(`WebSocket transmission closed.`);
+				if (debugHeaders) {
+					console.error(`WebSocket transmission closed.`);
+				};
 				remoteWsService?.close();
 			});
 			socket.addEventListener("error", function (ev) {
 				if (debugHeaders) {
-					console.error(`WebSocket transmission error on Cloud Hop: ${ev.message}`);
+					console.error(`WebSocket transmission error on Mint: ${ev.message}`);
 				};
 			});
 			socket.addEventListener("message", function (ev) {

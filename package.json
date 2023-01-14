@@ -1,6 +1,6 @@
 {
 	"name": "cloudhop",
-	"version": "0.2.2",
+	"version": "0.3",
 	"description": "⛈ Easy-to-configure load balancing, available as serverless functions.",
 	"keywords": [
 		"bun js",
@@ -13,9 +13,9 @@
 		"reverse proxy",
 		"serverless functions"
 	],
-	"homepage": "https://github.com/PoneyClairDeLune/cloudhop",
+	"homepage": "https://github.com/ltgcgo/mint",
 	"bugs": {
-		"url": "https://github.com/PoneyClairDeLune/cloudhop/issues"
+		"url": "https://github.com/ltgcgo/mint/issues"
 	},
 	"license": "LGPL-3.0-only",
 	"author": "Lumière Élevé (https://github.com/PoneyClairDeLune)",

@@ -7,9 +7,9 @@
 	"queryStringParameters": <Object>,
 	"requestContext": {
 		"accountId": "anonymous",
-		"apiId": "exampleInstance",
-		"domainName": "exampleInstance.lambda-url.region.on.aws",
-		"domainPrefix": "exampleInstance",
+		"apiId": "<functionName>",
+		"domainName": "<functionName>.lambda-url.<region>.on.aws",
+		"domainPrefix": "<functionName>",
 		"http": {
 			"method": "GET",
 			"path": "/test",

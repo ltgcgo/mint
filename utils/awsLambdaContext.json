@@ -1,0 +1,10 @@
+{
+	"callbackWaitsForEmptyEventLoop": true,
+	"functionVersion": "$LATEST",
+	"functionName": "<functionName>",
+	"memoryLimitInMB": "128",
+	"logGroupName": "/aws/lambda/<functionName>",
+	"logStreamName": "2023/01/14/[$LATEST]<unknownId>",
+	"invokedFunctionArn": "arn:aws:lambda:<region>:<unknownNumber>:function:<functionName>",
+	"awsRequestId": "<uuid>"
+}

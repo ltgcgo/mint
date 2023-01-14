@@ -23,5 +23,5 @@ See [/docs](docs/README.md).
 | Deno Deploy | `deno.js` | ✓ | [Read](docs/deploy/denoDeploy.md) |
 | AWS Lambda | `lambda.js` | ✕ | [Read](docs/deploy/lambda.md) |
 | Azure Functions | `azure.js` | ✕ | [Read](docs/deploy/azure.md) |
-| Netlify Edge | `denoWrap.js` | ✕ | [Read](docs/deploy/netlify.md) |
+| Netlify Edge | `netlify.js` | ✕ | [Read](docs/deploy/netlify.md) |
 | Vercel Edge | `vercel.js` | ✕ | [Read](docs/deploy/vercel.md) |

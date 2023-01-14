@@ -10,7 +10,13 @@
 		"apiId": "exampleInstance",
 		"domainName": "exampleInstance.lambda-url.region.on.aws",
 		"domainPrefix": "exampleInstance",
-		"http": {},
+		"http": {
+			"method": "GET",
+			"path": "/test",
+			"protocol": "HTTP/1.1",
+			"sourceIp": "127.0.0.1",
+			"userAgent": "Dalvik/2.0.1"
+		},
 		"requestId": "<uuid>",
 		"routeKey": "$default",
 		"stage": "$default",

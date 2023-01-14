@@ -1,0 +1,11 @@
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  mintFlower:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Architectures:
+        - arm64
+      Code:
+        ZipFile: "../../dist/lambda.zip"
+      Description: "Easy-to-configure load balancing, available as serverless functions."

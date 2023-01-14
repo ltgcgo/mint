@@ -6,18 +6,8 @@
 import {handleRequest} from "../core/index.js";
 //import {stripHeader} from "./strip.js";
 
-let headerObject = function (headers) {
-	let object = {};
-	headers?.forEach((v, k) => {
-		object[k] = v;
-	});
-	return object;
-};
+let listenPort = parseInt(eG("LISTEN_PORT")) || 8006;
 
-/* serve(async function (request, connInfo) {
-	let clientIp = connInfo.remoteAddr.hostname;
-	return await handleRequest(request, clientIp);
-}); */
 let server = http.createServer(async function (requester, responder) {
 	// Request section
 	let clientIp = requester.headers["x-real-ip"] || requester.headers["x-forwarded-for"] || requester.socket.remoteAddress;
@@ -47,7 +37,7 @@ let server = http.createServer(async function (requester, responder) {
 		reqOpt.body = bodyStream;
 		reqOpt.duplex = "half";
 	};
-	let request = new Request(`https://${requester.headers.host}${requester.url}`, reqOpt);
+	let request = new Request(`${requester.headers["x-forwarded-proto"] || "http"}://${requester.headers.host}${requester.url}`, reqOpt);
 	// Reply section
 	let response = await handleRequest(request, clientIp);
 	response?.headers?.forEach((v, k) => {
@@ -71,4 +61,6 @@ let server = http.createServer(async function (requester, responder) {
 		});
 	};
 });
-server.listen(parseInt(eG("LISTEN_PORT")) || 8006);
+server.listen(listenPort, "127.0.0.1", () => {
+	console.info(`Listening on http://localhost:${listenPort}/`);
+});

@@ -22,6 +22,6 @@ if [ -e "src/${1:-default}/index.mjs" ] ; then
 	format="esm"
 	ext="mjs"
 fi
-esbuild --bundle src/${1:-default}/index.js $platform $prefix $affix $inject --charset=utf8 --format=$format --outfile=proxy/${1:-default}.${ext} ${2:---minify-whitespace --minify-syntax --sourcemap}
+esbuild --bundle src/${1:-default}/index.${ext} $platform $prefix $affix $inject --charset=utf8 --format=$format --outfile=proxy/${1:-default}.${ext} ${2:---minify-whitespace --minify-syntax --sourcemap}
 cat proxy/${1:-default}.${ext}
 exit

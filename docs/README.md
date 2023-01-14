@@ -9,7 +9,7 @@ Read before deploying Mint to your desired platforms.
 - [x] [Node.js](deploy/node.md) (Node)
 - [x] [Cloudflare Workers](deploy/cloudflare.md) (Service Worker)
 - [x] [Deno Deploy](deploy/denoDeploy.md) (Deno)
-- [ ] [AWS Lambda](deploy/lambda.md) (Node)
+- [x] [AWS Lambda](deploy/lambda.md) (Node)
 - [ ] [Azure Functions](deploy/azure.md) (Node)
 - [ ] [Netlify Edge](deploy/netlify.md) (Node)
 - [ ] [Vercel Edge](deploy/vercel.md) (Node)

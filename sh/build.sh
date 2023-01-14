@@ -9,16 +9,22 @@ rm -rv dist/*
 ls -1 src | while IFS= read -r dir ; do
 	if [ -e "src/${dir}/index.js" ] ; then
 		shx live $dir ${1:---minify} > /dev/null
+	elif [ -e "src/${dir}/index.mjs" ] ; then
+		shx live $dir ${1:---minify} > /dev/null
 	fi
 done
 rm -rv proxy/*.map
 # Finalizing most builds
 ls -1 src | while IFS= read -r dir ; do
-	if [ -e "src/${dir}/prefix.js" ] ; then
-		cat src/${dir}/prefix.js > dist/${dir}.js
+	ext="js"
+	if [ -e "src/${dir}/index.mjs" ] ; then
+		ext="mjs"
 	fi
-	if [ -e "proxy/${dir}.js" ] ; then
-		cat proxy/${dir}.js >> dist/${dir}.js
+	if [ -e "src/${dir}/prefix.js" ] ; then
+		cat src/${dir}/prefix.js > dist/${dir}.${ext}
+	fi
+	if [ -e "proxy/${dir}.${ext}" ] ; then
+		cat proxy/${dir}.${ext} >> dist/${dir}.${ext}
 	fi
 done
 # Node specific

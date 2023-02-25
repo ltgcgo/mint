@@ -1,0 +1,14 @@
+{
+	"__ow_method": "get",
+	"__ow_query": "",
+	"__ow_body": "",
+	"__ow_headers": <Object>,
+	"__ow_path":"",
+	"http": {
+		"body": "",
+		"headers": <Object>,
+		"method": "GET",
+		"path": "",
+		"queryString": ""
+	}
+}

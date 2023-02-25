@@ -1,7 +1,7 @@
 import {headerObject, base64Decode} from "../node/utils.js";
 import {handleRequest} from "../core/index.js";
 
-const stayPlain = ["", "text/plain", "text/html", "application/json"]
+const stayPlain = "application/json,application/javascript".split(",");
 
 let main = async function (ev, context) {
 	let clientIp = ev?.http?.headers["cf-connecting-ip"] || "127.3.2.1";
@@ -52,7 +52,10 @@ let main = async function (ev, context) {
 		statusCode: response?.status || 502,
 		headers: headerObject(response?.headers)
 	};
-	if (stayPlain.indexOf(response?.headers.get("Content-Type")?.split(";")[0] || "") != -1) {
+	if (
+		stayPlain.indexOf(response?.headers.get("Content-Type")?.split(";")[0] || "") != -1 ||
+		response?.headers.get("Content-Type")?.indexOf("text/") != -1
+	) {
 		// Return the body as-is
 		finalReply.body = Buffer.concat(repBody).toString();
 	} else {

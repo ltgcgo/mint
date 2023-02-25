@@ -3,7 +3,7 @@ import {handleRequest} from "../core/index.js";
 
 const stayPlain = ["", "text/plain", "text/html", "application/json"]
 
-let main = async function (ev) {
+let main = async function (ev, context) {
 	let clientIp = ev?.http?.headers["cf-connecting-ip"] || "127.3.2.1";
 	let bodyBlob;
 	if (ev?.http?.body?.length) {
@@ -16,15 +16,15 @@ let main = async function (ev) {
 	let response, repBody = [];
 	try {
 		let reqOpt = {
-			"method": ev.http.method,
-			"headers": ev.http.headers
+			"method": ev?.http?.method || "GET",
+			"headers": ev?.http?.headers
 		};
 		if (bodyBlob) {
 			reqOpt.body = bodyBlob;
 		};
-		let fullUrl = `${ev.http.headers["x-forwarded-proto"]}://${ev.http.headers["host"]}${ev.http.path}`;
-		if (ev.http.queryString?.length > 0) {
-			fullUrl += `?${ev.http.queryString}`;
+		let fullUrl = `${ev.http && ev.http.headers["x-forwarded-proto"] || "http"}://${ev.http && ev.http.headers["host"] || "internal"}${ev.http && ev.http.path || "/"}`;
+		if (ev?.http?.queryString?.length > 0) {
+			fullUrl += `?${ev.http && ev.http.queryString || ""}`;
 		};
 		let request = new Request(fullUrl, reqOpt);
 		response = await handleRequest(request, clientIp);
@@ -49,10 +49,10 @@ let main = async function (ev) {
 		};
 	};
 	let finalReply = {
-		statusCode: response?.status,
+		statusCode: response?.status || 502,
 		headers: headerObject(response?.headers)
 	};
-	if (stayPlain.dexOf(response?.headers.get("Content-Type") || "") != -1) {
+	if (stayPlain.indexOf(response?.headers.get("Content-Type")?.split(";")[0] || "") != -1) {
 		// Return the body as-is
 		finalReply.body = Buffer.concat(repBody).toString();
 	} else {

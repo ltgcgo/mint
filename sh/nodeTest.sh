@@ -1,6 +1,6 @@
 #!/bin/bash
 export LISTEN_PORT=8005
-export BACKENDS=browserleaks.com
+export BACKENDS=${1:-browserleaks.com}
 export DEBUGGER=1
 export FOLLOW_REDIR=0
 export FORCE_OUT_TLS=tls

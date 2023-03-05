@@ -1,4 +1,5 @@
 {
+	"installCommand": "npm i",
 	"redirects": [{
 		"permanent": false,
 		"source": "/",

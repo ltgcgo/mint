@@ -1,8 +1,10 @@
 {
-	"installCommand": "npm i",
+	"installCommand": "npm install",
 	"rewrites": [{
-		"permanent": false,
-		"source": "/*",
-		"destination": "/api/*"
+		"source": "/",
+		"destination": "/api/"
+	}, {
+		"source": "/:path*",
+		"destination": "/api/"
 	}]
 }

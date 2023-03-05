@@ -5,7 +5,9 @@ This is a patched version of Node.js implementation.
 */
 
 // Node import section
-import {WebSocket, WebSocketServer as WebSocketService} from "ws";
+let wsRequire = require("ws");
+let WebSocket = wsRequire.WebSocket;
+let WebSocketService = wsRequire.WebSocketServer;
 
 // Script import section
 import {handleRequest} from "../core/index.js";

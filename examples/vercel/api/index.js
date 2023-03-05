@@ -1,1 +1,1 @@
-../../../dist/node.js
+../../../dist/vercel.js

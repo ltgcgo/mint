@@ -18,6 +18,9 @@ fi
 if [ -e "src/${1:-default}/.node" ] ; then
 	platform="--platform=node"
 fi
+if [ -e "src/${1:-default}/.cjs" ] ; then
+	format="cjs"
+fi
 if [ -e "src/${1:-default}/index.mjs" ] ; then
 	format="esm"
 	ext="mjs"

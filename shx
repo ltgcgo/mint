@@ -3,7 +3,7 @@ arg="$@"
 args=( "$@" )
 if [ "$arg" == "" ] ; then
 	echo "All available actions:"
-	ls -1 sh | while IFS= read -r file; do
+	ls -1 sh | sort | while IFS= read -r file; do
 		echo "${file/.sh/}"
 	done
 	exit

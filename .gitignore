@@ -1,8 +1,11 @@
 *.swp
+.pnp.*
 deno.lock
-package-lock.json
+#package-lock.json
+yarn.lock
 /dist/*.map
 /proxy/*
 /lib/*
 /node_modules/*
 /src/vendor/*
+/.yarn/*

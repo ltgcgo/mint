@@ -1,8 +1,8 @@
 {
 	"installCommand": "npm i",
-	"redirects": [{
+	"rewrites": [{
 		"permanent": false,
-		"source": "/",
-		"destination": "/api/"
+		"source": "/*",
+		"destination": "/api/*"
 	}]
 }

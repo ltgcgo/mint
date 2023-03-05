@@ -1,7 +1,7 @@
 import {handleRequest} from "../core/index.js";
 
-export const config = {
+/*export const config = {
 	runtime: "edge"
-};
+};*/
 
 export default handleRequest;

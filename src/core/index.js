@@ -144,7 +144,10 @@ let handleRequest = async function (request, clientInfo) {
 			console.info(`Tries: ${localTries}, lang: ${useLang || "blank"}, target: ${request.method} ${reqUrl.protocol}//${reqHost}/`);
 		};
 		// Let the WebSocket forwarder deal with WS connections
-		if (request.headers.get("Upgrade")?.toLowerCase() == "websocket") {
+		if (
+			request.headers.get("Upgrade")?.toLowerCase() == "websocket" ||
+			request.headers.has("Sec-WebSocket-Key")
+		) {
 			let {socket, response} = Deno.upgradeWebSocket(request);
 			let remoteWsService, dataQueue = [];
 			socket.addEventListener("open", function () {

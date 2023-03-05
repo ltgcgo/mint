@@ -1,1 +1,0 @@
-../../../dist/vercel.mjs

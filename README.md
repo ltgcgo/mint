@@ -24,7 +24,7 @@ See [/docs](docs/README.md).
 | Vercel Edge | `vercel.js` | ✓ | ✓ | ✕ | ✕ | [Read](docs/deploy/vercel.md) |
 | AWS Lambda | `lambda.js` | ✓ | ✕ | ✕ | ✕ | [Read](docs/deploy/lambda.md) |
 | DO Function | `dofn.js` | ✓ | ✕ | ✕ | ✕ | [Read](docs/deploy/dofn.md) |
+| Netlify Edge | `netlify.js` | ✓ | ✕ | ✕ | ✕ | [Read](docs/deploy/netlify.md) |
 | Azure Functions | `azure.js` | ✕ | ✕ | ✕ | ✕ | [Read](docs/deploy/azure.md) |
-| Netlify Edge | `netlify.js` | ✕ | ✕ | ✕ | ✕ | [Read](docs/deploy/netlify.md) |
 | Oracle Functions | `oracle.js` | ✕ | ✕ | ✕ | ✕ | [Read](docs/deploy/oracle.md) |
 | IBM Functions | `ibm.js` | ✕ | ✕ | ✕ | ✕ | [Read](docs/deploy/ibm.md) |

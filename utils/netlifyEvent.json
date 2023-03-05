@@ -1,0 +1,16 @@
+{
+	"rawUrl": "https://example.com/path?a=b",
+	"rawQuery": "a=b",
+	"path": "/path",
+	"httpMethod": "GET",
+	"headers": <Object>,
+	"multiValueHeaders": <Object Key:Array>,
+	"queryStringParameters": {
+		"a": "b"
+	},
+	"multiValueQueryStringParameters": {
+		"a": ["b"]
+	},
+	"body": "",
+	"isBase64Encoded": false
+}

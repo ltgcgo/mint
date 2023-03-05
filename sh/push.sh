@@ -2,7 +2,8 @@
 # Build the project
 shx build
 # Some project-specific commands
-cp dist/node.js examples/vercel/api/handler.js
+cp dist/node.js examples/vercel/api/index.js
+cp package.json examples/vercel/
 # Push the project
 shx commit
 exit

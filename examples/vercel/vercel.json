@@ -1,7 +1,6 @@
 {
-	"functions": {
-		"**.js": {
-			"memory": 128
-		}
-	}
+	"rewrites": [{
+		"source": "/:path*",
+		"destination": "/api/:path*"
+	}]
 }

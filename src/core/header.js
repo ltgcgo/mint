@@ -63,8 +63,7 @@ let adaptReqHeaders = function (header, opts) {
 let adaptResp = async function (response, filter, opts = {}) {
 	// This implementation cannot handle when there are multiple same headers with different values
 	// Also, this implementation doesn't yet handle case differences in headers
-	let headerObj = {},
-	target = response.body;
+	let headerObj = {}, target = response.body;
 	if (filter?.constructor != Function) {
 		filter = function (key, value) {
 			return [key, value];

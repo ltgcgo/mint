@@ -3,7 +3,9 @@
 
 **Cloud Hop** has been renamed to **Mint** to follow naming consistency, and to avoid certain confusion.
 
-The name "Mint" is a reference to _Split Horizon_ (aka _Mint Flower_) in [Shed My Skin](https://www.fimfiction.net/story/406711/shed-my-skin), a changeling willing to risk his everything to save his girlfriend.
+The name "Mint" is a reference to _Split Horizon_ (aka _Mint Flower_) in [Shed My Skin](https://www.fimfiction.net/story/406711/shed-my-skin), a changeling willing to risk his everything to save his fillyfriend.
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/59069ce6d39129da806e/maintainability)](https://codeclimate.com/github/ltgcgo/mint/maintainability)
 
 ## Information stripping/spoofing
 A question to developers: why the heck will you need users' information to begin with? Can you just leave it be?
